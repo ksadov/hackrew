@@ -5,14 +5,12 @@ window.addEventListener('load', function(ev) {
 	{ folder: "body",
 	  items: ["sleek", "fluffy"],
 	  colors: ["FFFFFF", "FFBD6C"],
-	  none_allowed: false,
-	  moveable: false
+	  none_allowed: false
 	},
 	{ folder: "ears",
 	  items: ["small", "big"],
 	  colors: ["FFFFFF", "FFBD6C"],
-	  none_allowed: true,
-	  moveable: false
+	  none_allowed: true
 	},
 	{ folder: "tail",
 	  items: ["long", "short"],
@@ -23,8 +21,7 @@ window.addEventListener('load', function(ev) {
 	{ folder: "accessories",
 	  items: ["bow", "crown"],
 	  colors: [],
-	  none_allowed: true,
-	  moveable: true
+	  none_allowed: true
 	}
     ];
 
@@ -144,12 +141,6 @@ window.addEventListener('load', function(ev) {
 	}
 	else {
 	    document.getElementById("palette_button").style.display = "inline-flex";
-	}
-	if (parts[partId].moveable) {
-	    document.getElementById("move_button").style.display = "inline-flex";
-	}
-	else {
-	    document.getElementById("move_button").style.display = "none";
 	}
 	return null;
     }

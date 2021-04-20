@@ -80,7 +80,7 @@ body {
     object-fit: scale-down;
 }
 
-.imagemaker_save_btn {
+.imagemaker_save_button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -103,7 +103,7 @@ body {
     background-repeat: no-repeat;
 }
 
-.imagemaker_ctrl_btns {
+.imagemaker_ctrl_buttons {
     position: absolute;
     top: auto;
     right: 4px;
@@ -157,7 +157,7 @@ body {
     cursor: pointer;
 }
 
-.imagemaker_random_btn {
+.imagemaker_random_button {
     position: absolute;
     top: 0;
     right: auto;
@@ -225,7 +225,7 @@ body {
     cursor: pointer;
 }
 
-.imagemaker_ctrl_btns {
+.imagemaker_ctrl_buttons {
     position: absolute;
     top: auto;
     right: 4px;
@@ -236,7 +236,7 @@ body {
     z-index: 0;
 }
 
-.imagemaker_ctrl_btns .btn_show_itemlist {
+.imagemaker_ctrl_buttons .button_show_itemlist {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -255,8 +255,10 @@ body {
     line-height: 50px;
 }
 
-.imagemaker_ctrl_btns .btn_show_controller {
-    display: inline-flex;
+.imagemaker_ctrl_buttons .button_show_controller {
+    /* TODO: implement movable parts*/
+    display: none;
+    /* display: inline-flex; */
     justify-content: center;
     align-items: center;
     width: 50px;
@@ -276,7 +278,7 @@ body {
     top: -55px;
 }
 
-.imagemaker_ctrl_btns .btn_show_colorpalette {
+.imagemaker_ctrl_buttons .button_show_colorpalette {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -297,11 +299,11 @@ body {
     left: -55px;
 }
 
-.imagemaker_ctrl_btns .btn_show_itemlist.selected {
+.imagemaker_ctrl_buttons .button_show_itemlist.selected {
     color: #ff597e;
 }
 
-.imagemaker_info_show_btn {
+.imagemaker_info_show_button {
     position: absolute;
     top: 4px;
     right: 4px;
@@ -324,7 +326,7 @@ body {
     font-size: 18px;
 }
 
-.imagemaker_picrew_logo {
+.imagemaker_logo {
     position: absolute;
     top: 6px;
     right: auto;
