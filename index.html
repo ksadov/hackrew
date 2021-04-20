@@ -8,10 +8,14 @@
     <script src="imagemaker.js"></script> 
     <div id="image-maker" class="imagemaker">
       <div class="imagemaker_container_wrapper">
+	<div id="info_wrap" class="imagemaker_info_wrapper">
+	  <div class="imagemaker_info_content">
+	    <p> Extra info goes here. </p>
+	  </div>
+	</div>
 	<div class="imagemaker_container">
 	  <div class="imagemaker_canvas_wrapper">
 	    <canvas id="my-canvas-object" width="600" height="600"></canvas>
-
 	    <a class="imagemaker_save_button" id="save" download="new_image.png">
 	      Save
 	    </a>
@@ -40,9 +44,9 @@
 	      </div>
 	    </div>
 	  </div>
-	  <span class="imagemaker_info_show_button">?</span>
-	  <a class = "imagemaker_logo" href="/" exact=""></a>
+	  <span id="info_button" class="imagemaker_info_show_button">?</span>
 	</div>
+	<a class = "imagemaker_logo" href="/" exact=""></a>
       </div>
     </div>
   </body>

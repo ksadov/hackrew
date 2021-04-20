@@ -43,8 +43,13 @@ window.addEventListener('load', function(ev) {
     const itemImages = [];
 
     const saveButton = document.getElementById("save_button");
+    
     const randomButton = document.getElementById("random_button");
     randomButton.addEventListener('click', randomize);
+
+    let infoVisible = false;
+    const infoButton = document.getElementById("info_button");
+    info_button.addEventListener('click', toggleInfo);
     
     init();
 
@@ -259,6 +264,18 @@ window.addEventListener('load', function(ev) {
             });
             image.src = path; 
         });
+    }
+
+    function toggleInfo() {
+	let infoWrap = document.getElementById("info_wrap");
+	if (infoVisible) {
+	    infoWrap.style.display = "none";
+	    infoVisible = false;
+	}
+	else {
+	    infoWrap.style.display = "block";
+	    infoVisible = true;
+	}
     }
    
 } ,false);
