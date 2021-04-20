@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang=en>
+  <head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <script src="imagemaker.js"></script> 
+    <div id="image-maker" class="imagemaker">
+      <div class="imagemaker_container_wrapper">
+	<div class="imagemaker_container">
+	  <div class="imagemaker_canvas_wrapper">
+	    <canvas id="my-canvas-object" width="600" height="600"></canvas>
+
+	    <a class="imagemaker_save_btn" id="save" download="new_image.png">
+	      Save
+	    </a>
+	    <div class="imagemaker_ctrl_btns">
+	      <span id="move_button" class="btn_show_controller"></span>
+	      <span class="btn_show_itemlist"></span>
+	      <span id="palette_button" class="btn_show_colorpalette"></span>
+	    </div>	    
+	  </div>
+	  <div class="imagemaker_control_wrapper">
+	    <div class="imagemaker_parts_menu_wrapper">
+	      <div class="imagemaker_parts_menu">
+		<ul id="parts_list">
+		</ul>
+	      </div>
+	      <div class="imagemaker_random_btn" id="random_button">
+		Random
+	      </div>
+	    </div>
+	    <div class="imagemaker_control_panel_wrapper">
+	      <div class="imagemaker_control_panel">
+		<div class="imagemaker_itemlist">
+		  <ul id="itemlist_list">
+		  </ul>
+		</div>
+	      </div>
+	    </div>
+	  </div>
+	  <span class="imagemaker_info_show_btn">?</span>
+	  <a class = "imagemaker_picrew_logo" href="/" exact=""></a>
+	</div>
+      </div>
+    </div>
+  </body>
+</html>

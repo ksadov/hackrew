@@ -1,0 +1,346 @@
+:root {
+    /* the color of the border around selected part and icon buttons */
+    --select-color: #FF0000;
+    /* the color/image filepath of the background of the image display area */
+    --image-background-color: hsla(0,0%,93.3%,.5);
+    --image-background-png: "none";
+    /* the color/image filepath of the random button */
+    --random-button-color: #ffbd15;
+    --random-button-png: "none";
+    /* the color/image filepath of the items menu background*/
+    --control-panel-color: #ccc;
+    --control-panel-png: "none";
+    /* the color of the item buttons */
+    --item-button-color: #fff;
+    /* the color/image filepath of the item menu toggle button */
+    --item-toggle-color: #fff;
+    --item-toggle-png: url("assets/item_toggle.png");
+    /* the color/image filepath of the palette toggle button */
+    --palette-toggle-color: #fff;
+    --palette-toggle-png: url("assets/palette_toggle.png");
+    /* the color/image filepath of the info button */
+    --info-toggle-color: #fff;
+    --info-toggle-png: "none";
+    /* the color/image filepath of the info button */
+    --move-toggle-color: #fff;
+    --move-toggle-png: url("assets/move_toggle.png");
+    /* the image filepath of the logo */
+    --logo-png: "none";
+    --save-button-color: #00b33c;
+}
+
+* {
+    min-height: 0;
+    min-width: 0;
+    word-wrap: break-word;
+    box-sizing: border-box;
+}
+
+body {
+    height: 90vh;
+}
+.imagemaker {
+    height: 100%;
+}
+
+.imagemaker_container_wrapper {
+    width: 400px;
+    position: relative;
+    margin: 0 auto;
+    height: 100%;
+    border-style: solid;
+}
+
+.imagemaker_container {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--image-background-color, hsla(0,0%,93.3%,.5));
+    background-image: var(--image-background-png, none);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.imagemaker_canvas_wrapper {
+    position: relative;
+    max-height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.imagemaker_canvas_wrapper canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: scale-down;
+}
+
+.imagemaker_save_btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: 36px;
+    padding: 4px 8px;
+    background: var(--save-button-color, #555555);
+    border-radius: 4px;
+    text-align: center;
+    word-break: break-all;
+    color: #fff;
+    cursor: pointer;
+    position: absolute;
+    top: auto;
+    right: auto;
+    bottom: 4px;
+    left: 4px;
+    background-image: var(--download-button-png, "none");
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.imagemaker_ctrl_btns {
+    position: absolute;
+    top: auto;
+    right: 4px;
+    bottom: 4px;
+    left: auto;
+    width: 50px;
+    height: 50px;
+    z-index: 0;
+}
+
+.imagemaker_control_wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%
+}
+
+.imagemaker_parts_menu_wrapper {
+    flex: 0 0 70px;
+    position: relative;
+    padding-left: 18.18%;
+}
+
+.imagemaker_parts_menu {
+    height: 68px;
+    overflow: auto;
+    margin: 0;
+    white-space: nowrap;
+    background-color: var(--parts-menu-color, #eee);
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: scrollbar;
+}
+
+.imagemaker_parts_menu ul {
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+    position: relative;
+    list-style: "none";
+}
+
+.imagemaker_parts_menu ul li {
+    position: relative;
+    width: 60px;
+    min-width: 48px;
+    margin: 4px 2px 4px 2px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.imagemaker_random_btn {
+    position: absolute;
+    top: 0;
+    right: auto;
+    bottom: 0;
+    left: 0;
+    width: 18.18%;
+    background-color: var(--random-button-color, #ffbd16);
+    color: #fff;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: var(--random-button-png, "none");
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.imagemaker_control_panel_wrapper {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.imagemaker_control_panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 100px;
+    background-color: var(--control-panel-color, #ccc);
+    background-image: var(--constrol-panel-png, "none");
+    background-repeat: no-repeat;
+}
+
+.imagemaker_itemlist {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 100px;
+    width: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.imagemaker_itemlist ul {
+    padding: 0;
+    font-size: 0;
+    margin: .5%;
+}
+
+.imagemaker_itemlist ul li {
+    width: 23.75%;
+    margin: .5%;
+    background-color: var(--item-button-color, #fff);
+    border-radius: 4px;
+    position: relative;
+    display: inline-block;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.imagemaker_ctrl_btns {
+    position: absolute;
+    top: auto;
+    right: 4px;
+    bottom: 4px;
+    left: auto;
+    width: 50px;
+    height: 50px;
+    z-index: 0;
+}
+
+.imagemaker_ctrl_btns .btn_show_itemlist {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: var(--item-toggle-color, #fff);
+    background-image: var(--item-toggle-png, "none");
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 0 solid #aaa;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    font-size: 18px;
+    position: absolute;
+    line-height: 50px;
+}
+
+.imagemaker_ctrl_btns .btn_show_controller {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: var(--move-toggle-color, #fff);
+    background-image: var(--move-toggle-png, "none");
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #333;
+    border: 0 solid #aaa;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    font-size: 18px;
+    position: absolute;
+    line-height: 50px;
+    top: -55px;
+}
+
+.imagemaker_ctrl_btns .btn_show_colorpalette {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: var(--palette-toggle-color, #fff);
+    background-image: var(--palette-toggle-png, "none");
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #333;
+    border: 0 solid #aaa;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    font-size: 18px;
+    position: absolute;
+    line-height: 50px;
+    left: -55px;
+}
+
+.imagemaker_ctrl_btns .btn_show_itemlist.selected {
+    color: #ff597e;
+}
+
+.imagemaker_info_show_btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    bottom: auto;
+    left: auto;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: var(--info-toggle-color, #fff);
+    background-image: var(--info-toggle-png, "none");
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #333;
+    border: 0 solid #aaa;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    font-size: 18px;
+}
+
+.imagemaker_picrew_logo {
+    position: absolute;
+    top: 6px;
+    right: auto;
+    bottom: auto;
+    left: 6px;
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color:  #ff597e;
+    background-image: var(--logo-png, "none");
+    width: 66px;
+    height: 20px;
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
+    display: none;
+}
+
+.selected {
+    border: 3px solid var(--select-color, #ff0000);
+}
