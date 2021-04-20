@@ -39,6 +39,10 @@
 body {
     height: 90vh;
 }
+
+canvas {
+}
+
 .imagemaker {
     height: 100%;
 }
@@ -141,7 +145,6 @@ body {
 .imagemaker_parts_menu ul {
     margin: 0;
     padding: 0;
-    font-size: 0;
     position: relative;
     list-style: "none";
 }
@@ -149,6 +152,7 @@ body {
 .imagemaker_parts_menu ul li {
     position: relative;
     width: 60px;
+    height: auto;
     min-width: 48px;
     margin: 4px 2px 4px 2px;
     display: inline-flex;
@@ -206,13 +210,13 @@ body {
 
 .imagemaker_itemlist ul {
     padding: 0;
-    font-size: 0;
     margin: .5%;
 }
 
 .imagemaker_itemlist ul li {
-    width: 23.75%;
-    margin: .5%;
+    width: 80px;
+    height: 80px;
+    margin: 2px;
     background-color: var(--item-button-color, #fff);
     border-radius: 4px;
     position: relative;
@@ -221,7 +225,6 @@ body {
     margin: 0;
     padding: 0;
     vertical-align: middle;
-    font-size: 1rem;
     cursor: pointer;
 }
 
@@ -250,7 +253,6 @@ body {
     border-radius: 50%;
     cursor: pointer;
     text-align: center;
-    font-size: 18px;
     position: absolute;
     line-height: 50px;
 }
@@ -272,7 +274,6 @@ body {
     border-radius: 50%;
     cursor: pointer;
     text-align: center;
-    font-size: 18px;
     position: absolute;
     line-height: 50px;
     top: -55px;
@@ -293,7 +294,6 @@ body {
     border-radius: 50%;
     cursor: pointer;
     text-align: center;
-    font-size: 18px;
     position: absolute;
     line-height: 50px;
     left: -55px;
@@ -323,7 +323,6 @@ body {
     border-radius: 50%;
     cursor: pointer;
     text-align: center;
-    font-size: 18px;
 }
 
 .imagemaker_logo {

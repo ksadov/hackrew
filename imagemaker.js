@@ -1,6 +1,8 @@
 window.addEventListener('load', function(ev) {
 
+    /* relative path to the folder containing part folders */
     const assets_path = "assets/"
+    
     const parts = [
 	{ folder: "body",
 	  items: ["sleek", "fluffy"],
@@ -25,17 +27,8 @@ window.addEventListener('load', function(ev) {
 	}
     ];
 
-    const image_display_img = null;
-    const download_button_img = null;
-    const random_button_img = null;
-    const control_panel_img = null;
-    const image_toggle_img = null;
-    const palette_toggle_img = null;
-    const info_toggle_img = null;
-    const move_toggle_img = null;
-    const logo_img = null;
-    const logo_link = null;
-
+    // code below this line controls functionality
+    // you probably don't want to edit it
     
     const canvas = document.getElementById("my-canvas-object");
     const context = canvas.getContext('2d');
@@ -205,6 +198,11 @@ window.addEventListener('load', function(ev) {
 	    }
 	}
 	return null;
+    }
+
+    /* Initialize */
+    async function initUiImgs () {
+	
     }
     
     /**
