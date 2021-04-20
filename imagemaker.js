@@ -53,6 +53,7 @@ window.addEventListener('load', function(ev) {
 	await renderLayerStack(updateSave);
 	await updateSelectedPart(0);
 	initItemFunctions();
+	await randomize();
     }
 
     /**
@@ -100,9 +101,6 @@ window.addEventListener('load', function(ev) {
 		document.getElementById("itemlist_list").appendChild(item);
 		itemsElements[i].push(item);
 		itemImages[i].push(itemIcon.src);
-		if (j == 0) {
-		    layerStack.push(await(newLayer(itemIcon.src)));
-		}
 	    }
 	}
 	return null;
@@ -210,8 +208,7 @@ window.addEventListener('load', function(ev) {
      */ 
     async function updateSave() {
 	save.href = canvas.toDataURL("image/png");
-    }
-    
+    }    
 
     /**
      * Display image with randomly selected items
@@ -221,6 +218,14 @@ window.addEventListener('load', function(ev) {
 	    let itemRange = parts[i].items.length + Number(parts[i].none_allowed);
 	    let itemIndex = Math.floor(Math.random() * itemRange);
 	    layerStack[i] = await(newLayer(itemImages[i][itemIndex]));
+	    for (j = 0; j < itemRange; j++) {
+		if (j == itemIndex) {
+		    itemsElements[i][j].classList.add("selected");
+		}
+		else {
+		    itemsElements[i][j].classList.remove("selected");
+		}
+	    }
 	}
 	renderLayerStack();
     }        
