@@ -28,49 +28,57 @@ window.addEventListener('load', function(ev) {
     ];
 
     // code below this line controls functionality
-    // you probably don't want to edit it
-    
+
+    // DOM Elements
     const canvas = document.getElementById("my-canvas-object");
     const context = canvas.getContext('2d');
-    
-    const layerStack = [];
-
+    const randomButton = document.getElementById("random_button");
+    const infoButton = document.getElementById("info_button");
+    const paletteButton = document.getElementById("palette_button");
+    const itemsButton = document.getElementById("items_button");
+    const saveButton = document.getElementById("save_button");
     /* Array of part select button DOM elements */
     const partsElements = [];
     /* Array of item select button DOM elements */
     const itemsElements = [];
-    /* Array of item .png paths */
+    
+
+    // global state variables
+    /* Array of item .png full paths */
     const itemImages = [];
-
-    const saveButton = document.getElementById("save_button");
-    
-    const randomButton = document.getElementById("random_button");
-    randomButton.addEventListener('click', randomize);
-
+    /* Loaded Images that should be rendered on the canvas for each part */
+    const layerStack = [];
+    /* Is the extra info screen currently visible? */
     let infoVisible = false;
-    const infoButton = document.getElementById("info_button");
-    info_button.addEventListener('click', toggleInfo);
-
+    /* Index of part whose menu is currently displayed */
     let selectedPart = 0;
+    /* Full paths to items currently selected, sans _{colorIndex} suffix */
     let selectedItemNames = [];
+    /* Colors selected for each part*/
     let selectedColors = [];
-    let paletteVisible = false;
-    
-    const paletteButton = document.getElementById("palette_button");
-    palette_button.addEventListener('click', togglePalette);
-
-    const itemsButton = document.getElementById("items_button");
-    items_button.addEventListener('click', toggleItems);
+    /* Is the palette select menu visible and item select menu invisible? */
+    let paletteVisible = false;    
     
     init();
 
     async function init() {
+	initButtons();
 	await initArrays();
 	initPalette();
 	await renderLayerStack(updateSave);
 	await updateSelectedPart(0);
 	await initItemFunctions();
 	await randomize();
+    }
+
+    /**
+     * Assign functions to buttons.
+     */
+    function initButtons() {
+	randomButton.addEventListener('click', randomize);
+	info_button.addEventListener('click', toggleInfo);
+	palette_button.addEventListener('click', togglePalette);
+	items_button.addEventListener('click', toggleItems);
     }
 
     /**
@@ -124,7 +132,6 @@ window.addEventListener('load', function(ev) {
 		itemsElements[i].push(item);
 	    }
 	}
-	console.log(itemImages);
 	return null;
     }
     
@@ -195,7 +202,8 @@ window.addEventListener('load', function(ev) {
 	    }
 	}
 	let newImg = itemImages[partId][itemId][selectedColors[partId]];
-	if (newImg !== null) {
+	if (newImg) {
+	    console.log(newImg);
 	    let newSelLayer = await(newLayer(newImg));
 	    layerStack[partId] = newSelLayer;
 	    selectedItemNames[partId] = newImg.split('_')[0];
@@ -241,7 +249,7 @@ window.addEventListener('load', function(ev) {
      * Display image with randomly selected items
      */ 
     async function randomize() {
-	for (i = 0; i < parts.length; i++) {
+	for (let i = 0; i < parts.length; i++) {
 	    let itemRange = parts[i].items.length + Number(parts[i].none_allowed);
 	    let itemIndex = Math.floor(Math.random() * itemRange);
 	    let colorRange = parts[i].colors.length;
@@ -269,7 +277,6 @@ window.addEventListener('load', function(ev) {
 	    }
 	}
 	await renderLayerStack();
-	updateIcons();
     }        
 
     /**
@@ -360,7 +367,6 @@ window.addEventListener('load', function(ev) {
 
     async function selectColor(partId, colorId) {
 	if (selectedItemNames[partId]) {
-	    console.log(selectedItemNames);
 	    let newImgFile = selectedItemNames[partId] + "_" + colorId.toString() + ".png";
 	    let colorLayer = await newLayer(newImgFile);
 	    layerStack[partId] = colorLayer;
