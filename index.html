@@ -21,7 +21,7 @@
 	    </a>
 	    <div class="imagemaker_ctrl_buttons">
 	      <span id="move_button" class="button_show_controller"></span>
-	      <span class="button_show_itemlist"></span>
+	      <span id="items_button" class="button_show_itemlist"></span>
 	      <span id="palette_button" class="button_show_colorpalette"></span>
 	    </div>	    
 	  </div>
@@ -37,8 +37,12 @@
 	    </div>
 	    <div class="imagemaker_control_panel_wrapper">
 	      <div class="imagemaker_control_panel">
-		<div class="imagemaker_itemlist">
+		<div id="imagemaker_itemlist" class="imagemaker_itemlist">
 		  <ul id="itemlist_list">
+		  </ul>
+		</div>
+		<div id="imagemaker_colorpalette" class="imagemaker_colorpalette">
+		  <ul id="colorpalette_list">
 		  </ul>
 		</div>
 	      </div>

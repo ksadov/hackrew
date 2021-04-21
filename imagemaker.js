@@ -6,17 +6,17 @@ window.addEventListener('load', function(ev) {
     const parts = [
 	{ folder: "body",
 	  items: ["sleek", "fluffy"],
-	  colors: ["FFFFFF", "FFBD6C"],
+	  colors: ["#FFFFFF", "#FFBD6C"],
 	  none_allowed: false
 	},
 	{ folder: "ears",
 	  items: ["small", "big"],
-	  colors: ["FFFFFF", "FFBD6C"],
+	  colors: ["#FFFFFF", "#FFBD6C", "#BBDE49"],
 	  none_allowed: true
 	},
 	{ folder: "tail",
 	  items: ["long", "short"],
-	  colors: ["FFFFFF", "FFBD6C"],
+	  colors: ["#FFFFFF", "#FFBD6C"],
 	  none_allowed: false,
 	  moveable: false
 	},
@@ -50,14 +50,25 @@ window.addEventListener('load', function(ev) {
     let infoVisible = false;
     const infoButton = document.getElementById("info_button");
     info_button.addEventListener('click', toggleInfo);
+
+    let selectedPart = 0;
+    let selectedItemNames = [];
+    let paletteVisible = false;
+    
+    const paletteButton = document.getElementById("palette_button");
+    palette_button.addEventListener('click', togglePalette);
+
+    const itemsButton = document.getElementById("items_button");
+    items_button.addEventListener('click', toggleItems);
     
     init();
 
     async function init() {
+	initPalette();
 	await initArrays();
 	await renderLayerStack(updateSave);
 	await updateSelectedPart(0);
-	initItemFunctions();
+	await initItemFunctions();
 	await randomize();
     }
 
@@ -116,6 +127,7 @@ window.addEventListener('load', function(ev) {
      * @param {number} partId The id of the selected part
      */
     async function updateSelectedPart(partId) {
+	selectedPart = partId;
 	for (let i = 0; i < parts.length; i++) {
 	    if (i == partId) {		
 		partsElements[i].classList.add('selected');
@@ -138,6 +150,7 @@ window.addEventListener('load', function(ev) {
 	else {
 	    document.getElementById("palette_button").style.display = "inline-flex";
 	}
+	updatePalette();
 	return null;
     }
 
@@ -183,11 +196,17 @@ window.addEventListener('load', function(ev) {
 	    layerStack[partId] = null;
 	}
 	renderLayerStack();
+	if (itemImages[partId][itemId]) {
+	    selectedItemNames[partId] = itemImages[partId][itemId].split('_')[0]
+	}
+	else {
+	    selectedItemNames[partId] = null;
+	}
 	return null;
     }
     
     /**
-     * Assign item select callback functions to part and item buttons
+     * Assign item select callback functions to part and item button
      */   
     async function initItemFunctions() {
 	for (let i = 0; i < parts.length; i++) {
@@ -226,6 +245,12 @@ window.addEventListener('load', function(ev) {
 	    for (j = 0; j < itemRange; j++) {
 		if (j == itemIndex) {
 		    itemsElements[i][j].classList.add("selected");
+		    if (itemImages[i][j]) {
+			selectedItemNames[i] = itemImages[i][j].split('_')[0];
+		    }
+		    else {
+			selectedItemNames[i] = null;
+		    }
 		}
 		else {
 		    itemsElements[i][j].classList.remove("selected");
@@ -277,6 +302,58 @@ window.addEventListener('load', function(ev) {
 	    infoVisible = true;
 	}
     }
-   
-} ,false);
 
+    function initPalette() {
+	for (let i = 0; i < parts.length; i++) {
+	    for (let j = 0; j < parts[i].colors.length; j++) {
+		let colorElement = document.createElement('li');
+		colorElement.style.backgroundColor = parts[i].colors[j];
+		colorElement.addEventListener('click', function() {
+		    selectColor(i, j);
+		});
+		colorElement.id = "color_" + i.toString() + "_" + j.toString();
+		colorElement.style.display = "none";
+		document.getElementById("colorpalette_list").appendChild(colorElement);
+	    }
+	}
+    }
+
+    function updatePalette() {
+	for (let i = 0; i < parts.length; i++) {
+	    for (let j = 0; j < parts[i].colors.length; j++) {
+		if (i === selectedPart) {		
+		    document.getElementById("color_" + i.toString()
+					    + "_" + j.toString()).style.display = "inline-block";
+		}
+		else {
+		    document.getElementById("color_" + i.toString()
+					    + "_" + j.toString()).style.display = "none";
+		}
+	    }
+	}
+    }
+    
+    function togglePalette() {
+	paletteVisible = true;
+	document.getElementById("imagemaker_colorpalette").style.display = "flex";
+	document.getElementById("imagemaker_itemlist").style.display = "none";	
+    }
+
+    function toggleItems() {
+	paletteVisible = false;
+	document.getElementById("imagemaker_colorpalette").style.display = "none";
+	document.getElementById("imagemaker_itemlist").style.display = "flex";
+    }
+
+    async function selectColor(partId, colorId) {
+	if (selectedItemNames[partId]) {
+	    let newImgFile = selectedItemNames[partId] + "_" + colorId.toString() + ".png";
+	    let colorLayer = await newLayer(newImgFile);
+	    layerStack[partId] = colorLayer;
+	}
+	await renderLayerStack();
+	return null;
+    }
+
+
+} ,false);
