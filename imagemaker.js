@@ -53,6 +53,7 @@ window.addEventListener('load', function(ev) {
 
     let selectedPart = 0;
     let selectedItemNames = [];
+    let selectedColors = [];
     let paletteVisible = false;
     
     const paletteButton = document.getElementById("palette_button");
@@ -64,8 +65,8 @@ window.addEventListener('load', function(ev) {
     init();
 
     async function init() {
-	initPalette();
 	await initArrays();
+	initPalette();
 	await renderLayerStack(updateSave);
 	await updateSelectedPart(0);
 	await initItemFunctions();
@@ -85,7 +86,7 @@ window.addEventListener('load', function(ev) {
 	    part.id = "part_" + i.toString();
             document.getElementById('parts_list').appendChild(part);
 	    partsElements.push(part);
-
+	    itemImages.push([]);
 	    if (parts[i].none_allowed) {
 		let noneButton = document.createElement('li');
 		let noneButtonIcon = document.createElement('img');
@@ -94,31 +95,36 @@ window.addEventListener('load', function(ev) {
 		document.getElementById("itemlist_list").appendChild(noneButton);
 		noneButton.style.display = "none";
 		itemsElements.push([noneButton]);
-		itemImages.push([null]);
+		itemImages[i].push([null]);
  	    }
 	    else {
 		itemsElements.push([]);
-		itemImages.push([]);
 	    }
+	    selectedColors.push(0);
 	    for (let j = 0; j < parts[i].items.length; j++) {
 		let item = document.createElement('li');
 		let itemIcon = document.createElement('img');
+		itemIcon.id = "icon_" + i.toString() + "_" + j.toString();
+		itemImages[i].push([]);
 		if (parts[i].colors.length > 0) {
-		    itemIcon.src = (assets_path + parts[i].folder + "/"
-				     + parts[i].items[j] + "_0.png");
+		    for (k = 0; k < parts[i].colors.length; k++) {
+			itemImages[i][j + Number(parts[i].none_allowed)].push((assets_path + parts[i].folder + "/" +
+					       parts[i].items[j] + "_" + k + ".png"));
+		    }
 		}
 		else {
-		    itemIcon.src = (assets_path + parts[i].folder + "/" +
-				     parts[i].items[j] + ".png");
+		    itemImages[i][j + Number(parts[i].none_allowed)].push((assets_path + parts[i].folder + "/" +
+					   parts[i].items[j] + ".png"));
 		}
+		itemIcon.src = itemImages[i][j + Number(parts[i].none_allowed)][0];
 		item.appendChild(itemIcon);
 		item.id = "item_" + i.toString() + "_" + j.toString();
 		item.style.display = "none";
 		document.getElementById("itemlist_list").appendChild(item);
 		itemsElements[i].push(item);
-		itemImages[i].push(itemIcon.src);
 	    }
 	}
+	console.log(itemImages);
 	return null;
     }
     
@@ -188,20 +194,17 @@ window.addEventListener('load', function(ev) {
 		itemsElements[partId][j].classList.remove("selected");
 	    }
 	}
-	if (itemImages[partId][itemId] !== null) {
-	    let new_layer = await(newLayer(itemImages[partId][itemId]));
-	    layerStack[partId] = new_layer;	    
+	let newImg = itemImages[partId][itemId][selectedColors[partId]];
+	if (newImg !== null) {
+	    let newSelLayer = await(newLayer(newImg));
+	    layerStack[partId] = newSelLayer;
+	    selectedItemNames[partId] = newImg.split('_')[0];
 	}
 	else {
 	    layerStack[partId] = null;
-	}
-	renderLayerStack();
-	if (itemImages[partId][itemId]) {
-	    selectedItemNames[partId] = itemImages[partId][itemId].split('_')[0]
-	}
-	else {
 	    selectedItemNames[partId] = null;
 	}
+	await renderLayerStack();
 	return null;
     }
     
@@ -241,23 +244,32 @@ window.addEventListener('load', function(ev) {
 	for (i = 0; i < parts.length; i++) {
 	    let itemRange = parts[i].items.length + Number(parts[i].none_allowed);
 	    let itemIndex = Math.floor(Math.random() * itemRange);
-	    layerStack[i] = await(newLayer(itemImages[i][itemIndex]));
+	    let colorRange = parts[i].colors.length;
+	    let colorIndex = Math.floor(Math.random() * colorRange);
+	    selectedColors[i] = colorIndex;
+	    let newImg = itemImages[i][itemIndex][colorIndex];
+	    if (newImg) {
+		layerStack[i] = await(newLayer(newImg));
+		selectedItemNames[i] = newImg.split('_')[0];
+	    }
+	    else {
+		layerStack[i] = null;
+		selectedItemNames[i] = null;
+	    }
 	    for (j = 0; j < itemRange; j++) {
 		if (j == itemIndex) {
 		    itemsElements[i][j].classList.add("selected");
-		    if (itemImages[i][j]) {
-			selectedItemNames[i] = itemImages[i][j].split('_')[0];
-		    }
-		    else {
-			selectedItemNames[i] = null;
-		    }
 		}
 		else {
 		    itemsElements[i][j].classList.remove("selected");
 		}
 	    }
+	    if (colorRange > 0) {
+		updateIcons(i, colorIndex);
+	    }
 	}
-	renderLayerStack();
+	await renderLayerStack();
+	updateIcons();
     }        
 
     /**
@@ -320,6 +332,7 @@ window.addEventListener('load', function(ev) {
 
     function updatePalette() {
 	for (let i = 0; i < parts.length; i++) {
+
 	    for (let j = 0; j < parts[i].colors.length; j++) {
 		if (i === selectedPart) {		
 		    document.getElementById("color_" + i.toString()
@@ -347,12 +360,22 @@ window.addEventListener('load', function(ev) {
 
     async function selectColor(partId, colorId) {
 	if (selectedItemNames[partId]) {
+	    console.log(selectedItemNames);
 	    let newImgFile = selectedItemNames[partId] + "_" + colorId.toString() + ".png";
 	    let colorLayer = await newLayer(newImgFile);
 	    layerStack[partId] = colorLayer;
+	    await renderLayerStack();
 	}
-	await renderLayerStack();
+	await updateIcons(partId, colorId);
 	return null;
+    }
+
+    async function updateIcons(partId, colorId) {
+	for (let j = 0; j < parts[partId].items.length; j++) {
+	    let partIcon = document.getElementById("icon_" + partId.toString() + "_" + j.toString());
+	    let newIconSrc = partIcon.src.split('_')[0] + "_" + colorId.toString() + ".png";
+	    partIcon.src = newIconSrc;
+	}
     }
 
 
