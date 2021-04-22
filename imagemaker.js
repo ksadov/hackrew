@@ -7,23 +7,23 @@ window.addEventListener('load', function(ev) {
 	{ folder: "body",
 	  items: ["sleek", "fluffy"],
 	  colors: ["#FFFFFF", "#FFBD6C"],
-	  none_allowed: false
+	  noneAllowed: false
 	},
 	{ folder: "ears",
 	  items: ["small", "big"],
 	  colors: ["#FFFFFF", "#FFBD6C", "#BBDE49"],
-	  none_allowed: true
+	  noneAllowed: true
 	},
 	{ folder: "tail",
 	  items: ["long", "short"],
 	  colors: ["#FFFFFF", "#FFBD6C"],
-	  none_allowed: false,
+	  noneAllowed: false,
 	  moveable: false
 	},
 	{ folder: "accessories",
 	  items: ["bow", "crown"],
 	  colors: [],
-	  none_allowed: true
+	  noneAllowed: true
 	}
     ];
 
@@ -37,27 +37,30 @@ window.addEventListener('load', function(ev) {
     const paletteButton = document.getElementById("palette_button");
     const itemsButton = document.getElementById("items_button");
     const saveButton = document.getElementById("save_button");
-    /* Array of part select button DOM elements */
+    /* 1d array of part select button DOM elements */
     const partsElements = [];
-    /* Array of item select button DOM elements */
+    /* 2d array of item select button DOM elements */
     const itemsElements = [];
     
 
     // global state variables
-    /* Array of item .png full paths */
-    const itemImages = [];
-    /* Loaded Images that should be rendered on the canvas for each part */
-    const layerStack = [];
     /* Is the extra info screen currently visible? */
     let infoVisible = false;
+    /* Is the palette select menu visible and item select menu invisible? */
+    let paletteVisible = false;  
     /* Index of part whose menu is currently displayed */
     let selectedPart = 0;
-    /* Full paths to items currently selected, sans _{colorIndex} suffix */
-    let selectedItemNames = [];
-    /* Colors selected for each part*/
-    let selectedColors = [];
-    /* Is the palette select menu visible and item select menu invisible? */
-    let paletteVisible = false;    
+    /* 3d array of item .png full paths where itemImages[i][j][k] is 
+       part i, item (j + noneAllowed), color k and item[i][0] is null if noneAllowed*/
+    const itemImages = []
+    /* 1d array of Loaded Images that should be rendered on the canvas, where
+       layerStack[i] is an item of part i in color selectedColors[i]*/
+    const layerStack = []
+    /* 1d array of colors where selectedColors[i] is the color selected for part i */
+    let selectedColors = []  
+    /* 1d array of full paths to items currently selected, sans _{colorIndex} suffix, 
+       where selectedItemNames[i] is the selected item of part i*/
+    let selectedItemNames = []
     
     init();
 
@@ -65,10 +68,9 @@ window.addEventListener('load', function(ev) {
 	initButtons();
 	await initArrays();
 	initPalette();
-	await renderLayerStack(updateSave);
-	await updateSelectedPart(0);
 	await initItemFunctions();
 	await randomize();
+	await updateSelectedPart(0);
     }
 
     /**
@@ -79,62 +81,38 @@ window.addEventListener('load', function(ev) {
 	info_button.addEventListener('click', toggleInfo);
 	palette_button.addEventListener('click', togglePalette);
 	items_button.addEventListener('click', toggleItems);
+	return null;
     }
 
     /**
      * Initialize partsElements, itemsElements, itemImages
      */
     async function initArrays() {
+	initPartsElements();
+	await initItemImages();
+	initItemsElements();
+	return null;
+    }
 
-	for (let i = 0; i < parts.length; i++) {	
-	    let part = document.createElement('li');
-	    let partIcon = document.createElement('img');
-            partIcon.src = assets_path + parts[i].folder + "/icon.png";
-	    part.appendChild(partIcon);
-	    part.id = "part_" + i.toString();
-            document.getElementById('parts_list').appendChild(part);
-	    partsElements.push(part);
-	    itemImages.push([]);
-	    if (parts[i].none_allowed) {
-		let noneButton = document.createElement('li');
-		let noneButtonIcon = document.createElement('img');
-		noneButtonIcon.src = assets_path + "none_button.png";
-		noneButton.appendChild(noneButtonIcon);
-		document.getElementById("itemlist_list").appendChild(noneButton);
-		noneButton.style.display = "none";
-		itemsElements.push([noneButton]);
-		itemImages[i].push([null]);
- 	    }
-	    else {
-		itemsElements.push([]);
-	    }
-	    selectedColors.push(0);
-	    for (let j = 0; j < parts[i].items.length; j++) {
-		let item = document.createElement('li');
-		let itemIcon = document.createElement('img');
-		itemIcon.id = "icon_" + i.toString() + "_" + j.toString();
-		itemImages[i].push([]);
-		if (parts[i].colors.length > 0) {
-		    for (k = 0; k < parts[i].colors.length; k++) {
-			itemImages[i][j + Number(parts[i].none_allowed)].push((assets_path + parts[i].folder + "/" +
-					       parts[i].items[j] + "_" + k + ".png"));
-		    }
-		}
-		else {
-		    itemImages[i][j + Number(parts[i].none_allowed)].push((assets_path + parts[i].folder + "/" +
-					   parts[i].items[j] + ".png"));
-		}
-		itemIcon.src = itemImages[i][j + Number(parts[i].none_allowed)][0];
-		item.appendChild(itemIcon);
-		item.id = "item_" + i.toString() + "_" + j.toString();
-		item.style.display = "none";
-		document.getElementById("itemlist_list").appendChild(item);
-		itemsElements[i].push(item);
+    /**
+     * Create color select DOM elements for every part's colors
+     */
+    function initPalette() {
+	for (let i = 0; i < parts.length; i++) {
+	    for (let j = 0; j < parts[i].colors.length; j++) {
+		let colorElement = document.createElement('li');
+		colorElement.style.backgroundColor = parts[i].colors[j];
+		colorElement.addEventListener('click', function() {
+		    selectColor(i, j);
+		});
+		colorElement.id = "color_" + i.toString() + "_" + j.toString();
+		colorElement.style.display = "none";
+		document.getElementById("colorpalette_list").appendChild(colorElement);
 	    }
 	}
 	return null;
     }
-    
+
     /**
      * Update UI to visibly select a part and display that part's items
      * @param {number} partId The id of the selected part
@@ -148,7 +126,7 @@ window.addEventListener('load', function(ev) {
 	    else {
 		partsElements[i].classList.remove('selected');;
 	    }
-	    for (let j = 0; j < (parts[i].items.length + Number(parts[i].none_allowed)); j++) {
+	    for (let j = 0; j < (parts[i].items.length + Number(parts[i].noneAllowed)); j++) {
 		if (i == partId) {
 		    itemsElements[i][j].style.display = "inline-flex";		
 		}
@@ -166,99 +144,21 @@ window.addEventListener('load', function(ev) {
 	updatePalette();
 	return null;
     }
-
-    async function clearCanvas() {
-	return (context.clearRect(0, 0, canvas.width, canvas.height));
-    }
-
-    /**
-     * Render Images in layerStack to canvas and update save URL
-     *
-     */
-    async function renderLayerStack() {	
-	await clearCanvas();
-	for (let layer = 0; layer < layerStack.length; layer++) {
-	    if (layerStack[layer]) {
-		context.drawImage(layerStack[layer], 0, 0);
-	    }
-	}
-	await updateSave();
-	return null;
-    }
-
-    /**
-     * Update UI to visibly select an item and render it to the canvas
-     *
-     * @param partId id of the part that the selected item belongs to
-     * @param itemId id of the selected item
-     */
-    async function updateSelectedItem(partId, itemId) {
-	for (let j = 0; j < (parts[partId].items.length +  Number(parts[partId].none_allowed)); j++) {
-	    if (j == itemId) {
-		itemsElements[partId][j].classList.add("selected");
-	    }
-	    else {
-		itemsElements[partId][j].classList.remove("selected");
-	    }
-	}
-	let newImg = itemImages[partId][itemId][selectedColors[partId]];
-	if (newImg) {
-	    console.log(newImg);
-	    let newSelLayer = await(newLayer(newImg));
-	    layerStack[partId] = newSelLayer;
-	    selectedItemNames[partId] = newImg.split('_')[0];
-	}
-	else {
-	    layerStack[partId] = null;
-	    selectedItemNames[partId] = null;
-	}
-	await renderLayerStack();
-	return null;
-    }
     
-    /**
-     * Assign item select callback functions to part and item button
-     */   
-    async function initItemFunctions() {
-	for (let i = 0; i < parts.length; i++) {
-	    partsElements[i].addEventListener('click', function() {
-		updateSelectedPart(i);
-	    });
-	    for (let j = 0; j < (parts[i].items.length +  Number(parts[i].none_allowed)); j++) {
-		itemsElements[i][j].addEventListener('click', function() {
-		    updateSelectedItem(i, j);
-		});
-	    }
-	}
-	return null;
-    }
-
-    /* Initialize */
-    async function initUiImgs () {
-	
-    }
-    
-    /**
-     * Update download save button with latest version of the canvas
-     */ 
-    async function updateSave() {
-	save.href = canvas.toDataURL("image/png");
-    }    
-
     /**
      * Display image with randomly selected items
      */ 
     async function randomize() {
 	for (let i = 0; i < parts.length; i++) {
-	    let itemRange = parts[i].items.length + Number(parts[i].none_allowed);
+	    let itemRange = parts[i].items.length + Number(parts[i].noneAllowed);
 	    let itemIndex = Math.floor(Math.random() * itemRange);
 	    let colorRange = parts[i].colors.length;
 	    let colorIndex = Math.floor(Math.random() * colorRange);
 	    selectedColors[i] = colorIndex;
-	    let newImg = itemImages[i][itemIndex][colorIndex];
-	    if (newImg) {
-		layerStack[i] = await(newLayer(newImg));
-		selectedItemNames[i] = newImg.split('_')[0];
+	    let newItem = itemImages[i][itemIndex];
+	    if (newItem) {
+		layerStack[i] = await(newLayer(newItem[colorIndex]));
+		selectedItemNames[i] = newItem[colorIndex].split('_')[0];
 	    }
 	    else {
 		layerStack[i] = null;
@@ -277,7 +177,168 @@ window.addEventListener('load', function(ev) {
 	    }
 	}
 	await renderLayerStack();
-    }        
+	return null;
+    }
+
+    /**
+     * Assign item select callback functions to partsElements and itemsElements members
+     */   
+    async function initItemFunctions() {
+	for (let i = 0; i < parts.length; i++) {
+	    partsElements[i].addEventListener('click', function() {
+		updateSelectedPart(i);
+	    });
+	    for (let j = 0; j < (parts[i].items.length +  Number(parts[i].noneAllowed)); j++) {
+		itemsElements[i][j].addEventListener('click', function() {
+		    updateSelectedItem(i, j);
+		});
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Render Images in layerStack to canvas and update save URL
+     */
+    async function renderLayerStack() {	
+	await clearCanvas();
+	for (let layer = 0; layer < layerStack.length; layer++) {
+	    if (layerStack[layer]) {
+		context.drawImage(layerStack[layer], 0, 0);
+	    }
+	}
+	await updateSave();
+	return null;
+    }
+    
+    /**
+     * Initialize partsElements 
+     */
+    function initPartsElements() {
+	for (let i = 0; i < parts.length; i++) {	
+	    let part = document.createElement('li');
+	    let partIcon = document.createElement('img');
+	    partIcon.src = assets_path + parts[i].folder + "/icon.png";
+	    part.appendChild(partIcon);
+	    part.id = "part_" + i.toString();
+            document.getElementById('parts_list').appendChild(part);
+	    partsElements[i] = part;
+	}
+	return null;
+    }
+
+    /**
+     * Initialize itemsElements
+     */
+    function initItemsElements() {
+	for (let i = 0; i < parts.length; i++) {
+	    itemsElements.push([]);
+	    for (let j = 0; j < parts[i].items.length; j++) {
+		itemsElements[i].push(null);
+	    }
+	}
+	for (let i = 0; i < parts.length; i++) {
+	    if (parts[i].noneAllowed) {
+		let noneButton = document.createElement('li');
+		let noneButtonIcon = document.createElement('img');
+		noneButtonIcon.src = assets_path + "none_button.png";
+		noneButton.appendChild(noneButtonIcon);
+		document.getElementById("itemlist_list").appendChild(noneButton);
+		noneButton.style.display = "none";
+		itemsElements[i][0] = noneButton;
+ 	    }
+	    for (let j = 0; j < parts[i].items.length; j++) {
+		let item = document.createElement('li');
+		let itemIcon = document.createElement('img');
+		itemIcon.id = "icon_" + i.toString() + "_" + j.toString();
+		itemIcon.src = itemImages[i][j + Number(parts[i].noneAllowed)][0]
+		item.appendChild(itemIcon);
+		item.id = "item_" + i.toString() + "_" + j.toString();
+		item.style.display = "none";
+		document.getElementById("itemlist_list").appendChild(item);
+		itemsElements[i][j + Number(parts[i].noneAllowed)] = item;
+	    }
+	}
+	return null;
+     }
+
+    /**
+     * Initialize itemImages
+     *
+     */
+    async function initItemImages() {
+	for (let i = 0; i < parts.length; i++) {
+	    let selectableCount =  parts[i].items.length + Number(parts[i].noneAllowed);
+	    itemImages.push([]);
+	    for (let j = 0; j < selectableCount; j++) {
+		itemImages[i].push([]);
+		for (let k = 0; k < parts[i].colors.length; k++) {
+		    itemImages[i][j].push(null);
+		}
+	    }
+	}
+	for (let i = 0; i < parts.length; i++) {
+	    if (parts[i].noneAllowed) {
+		itemImages[i][0] = null;
+	    }
+	    for (let j = 0; j < parts[i].items.length; j++) {
+		let item_index = j + Number(parts[i].noneAllowed);
+		if (parts[i].colors.length === 0) {
+		    itemImages[i][item_index][0] = (assets_path +
+						    parts[i].folder + "/" +
+						    parts[i].items[j] + ".png");
+		}
+		else {
+		    for (let k = 0; k < parts[i].colors.length; k++) {
+			itemImages[i][item_index][k] = (assets_path +
+							parts[i].folder + "/" +
+							parts[i].items[j] + "_" +
+							k + ".png");
+		    }
+		}
+	    }
+	}
+	return null;
+    }
+
+    async function clearCanvas() {
+	return (context.clearRect(0, 0, canvas.width, canvas.height));
+    }
+
+    /**
+     * Update UI to visibly select a part[partId].items[itemId] and render it to the canvas
+     */
+    async function updateSelectedItem(partId, itemId) {
+	for (let j = 0; j < (parts[partId].items.length +  Number(parts[partId].noneAllowed)); j++) {
+	    if (j == itemId) {
+		itemsElements[partId][j].classList.add("selected");
+	    }
+	    else {
+		itemsElements[partId][j].classList.remove("selected");
+	    }
+	}
+	let selectedNone = (itemImages[partId][itemId] == null);
+	if (selectedNone) {
+	    layerStack[partId] = null;
+	    selectedItemNames[partId] = null;
+	}
+	else {
+	    let newImg = itemImages[partId][itemId][selectedColors[partId]];
+	    let newSelLayer = await(newLayer(newImg));
+	    layerStack[partId] = newSelLayer;
+	    selectedItemNames[partId] = newImg.split('_')[0];
+	}
+	await renderLayerStack();
+	return null;
+    }
+    
+    /**
+     * Update download save button with latest version of the canvas
+     */ 
+    async function updateSave() {
+	save.href = canvas.toDataURL("image/png");
+	return null;
+    }          
 
     /**
      * Create a new Image from a path
@@ -310,6 +371,9 @@ window.addEventListener('load', function(ev) {
         });
     }
 
+    /**
+     * Display info menu if it's visible, hide it if it's invisible
+     */
     function toggleInfo() {
 	let infoWrap = document.getElementById("info_wrap");
 	if (infoVisible) {
@@ -322,24 +386,11 @@ window.addEventListener('load', function(ev) {
 	}
     }
 
-    function initPalette() {
-	for (let i = 0; i < parts.length; i++) {
-	    for (let j = 0; j < parts[i].colors.length; j++) {
-		let colorElement = document.createElement('li');
-		colorElement.style.backgroundColor = parts[i].colors[j];
-		colorElement.addEventListener('click', function() {
-		    selectColor(i, j);
-		});
-		colorElement.id = "color_" + i.toString() + "_" + j.toString();
-		colorElement.style.display = "none";
-		document.getElementById("colorpalette_list").appendChild(colorElement);
-	    }
-	}
-    }
-
+    /**
+     * Display palette of selectedPart
+     */
     function updatePalette() {
 	for (let i = 0; i < parts.length; i++) {
-
 	    for (let j = 0; j < parts[i].colors.length; j++) {
 		if (i === selectedPart) {		
 		    document.getElementById("color_" + i.toString()
@@ -352,20 +403,30 @@ window.addEventListener('load', function(ev) {
 	    }
 	}
     }
-    
+
+    /**
+     * Display palette menu, hide item menu
+     */
     function togglePalette() {
 	paletteVisible = true;
 	document.getElementById("imagemaker_colorpalette").style.display = "flex";
 	document.getElementById("imagemaker_itemlist").style.display = "none";	
     }
 
+    /**
+     * Display item menu, hide palette menu
+     */
     function toggleItems() {
 	paletteVisible = false;
 	document.getElementById("imagemaker_colorpalette").style.display = "none";
 	document.getElementById("imagemaker_itemlist").style.display = "flex";
     }
 
+    /**
+     * Change the color of the item selected for part[partId] to part[partId].colors[colorId]
+     */
     async function selectColor(partId, colorId) {
+	selectedColors[partId] = colorId;
 	if (selectedItemNames[partId]) {
 	    let newImgFile = selectedItemNames[partId] + "_" + colorId.toString() + ".png";
 	    let colorLayer = await newLayer(newImgFile);
@@ -376,10 +437,14 @@ window.addEventListener('load', function(ev) {
 	return null;
     }
 
+    /**
+     * Change the item icons for parts[partId] to parts[partId].colors[colorId]
+     */
     async function updateIcons(partId, colorId) {
 	for (let j = 0; j < parts[partId].items.length; j++) {
+	    let itemId = j + Number(parts[partId].noneAllowed);
 	    let partIcon = document.getElementById("icon_" + partId.toString() + "_" + j.toString());
-	    let newIconSrc = partIcon.src.split('_')[0] + "_" + colorId.toString() + ".png";
+	    let newIconSrc = itemImages[partId][itemId][colorId];
 	    partIcon.src = newIconSrc;
 	}
     }
