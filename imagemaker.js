@@ -78,9 +78,9 @@ window.addEventListener('load', function(ev) {
      */
     function initButtons() {
 	randomButton.addEventListener('click', randomize);
-	info_button.addEventListener('click', toggleInfo);
-	palette_button.addEventListener('click', togglePalette);
-	items_button.addEventListener('click', toggleItems);
+	infoButton.addEventListener('click', toggleInfo);
+	paletteButton.addEventListener('click', togglePalette);
+	itemsButton.addEventListener('click', toggleItems);
 	return null;
     }
 
@@ -136,10 +136,10 @@ window.addEventListener('load', function(ev) {
  	    }
 	}
 	if (parts[partId].colors.length === 0) {
-	    document.getElementById("palette_button").style.display = "none";
+	    paletteButton.style.display = "none";
 	}
 	else {
-	    document.getElementById("palette_button").style.display = "inline-flex";
+	    paletteButton.style.display = "inline-flex";
 	}
 	updatePalette();
 	return null;
@@ -379,10 +379,12 @@ window.addEventListener('load', function(ev) {
 	if (infoVisible) {
 	    infoWrap.style.display = "none";
 	    infoVisible = false;
+	    infoButton.textContent = "?";
 	}
 	else {
 	    infoWrap.style.display = "block";
 	    infoVisible = true;
+	    infoButton.textContent = "X";
 	}
     }
 
