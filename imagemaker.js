@@ -1,7 +1,4 @@
 window.addEventListener('load', function(ev) {
-
-    /* relative path to the folder containing part folders */
-    const assets_path = "assets/"
     
     const parts = [
 	{ folder: "body",
@@ -29,6 +26,9 @@ window.addEventListener('load', function(ev) {
 
     // code below this line controls functionality
 
+    /* relative path to the folder containing part folders */
+    const assets_path = "imagemaker_assets/"
+    
     // DOM Elements
     const canvas = document.getElementById("my-canvas-object");
     const context = canvas.getContext('2d');
@@ -450,6 +450,4 @@ window.addEventListener('load', function(ev) {
 	    partIcon.src = newIconSrc;
 	}
     }
-
-
 } ,false);
