@@ -44,8 +44,209 @@ body {
     height: 100%;
 }
 
+@media (orientation: landscape) {
+    .imagemaker_container_wrapper {
+	width: 800px;
+    }
+    
+    .imagemaker_container {
+	flex-direction: row;
+    }
+    
+    .imagemaker_canvas_wrapper {
+	max-height: 100%;
+    }
+
+    .imagemaker_save_button {
+	top: 5px;
+	height: 36px;
+    }
+
+    .imagemaker_ctrl_buttons {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	bottom: auto;
+	left: auto;
+	width: 50px;
+	height: 50px;
+	z-index: 0;
+    }
+
+    .imagemaker_control_wrapper {
+	position: relative;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-width: 275px;
+	height: 100%
+    }
+
+    .imagemaker_info_show_button {
+	position: absolute;
+	top: auto;
+	right: auto;
+	bottom: 4px;
+	left: 4px;
+	width: 50px;
+	height: 50px;
+    }
+
+    .imagemaker_random_button {
+	min-width: 60px;
+	font-size: 14px;
+    }
+
+    .imagemaker_parts_menu ul {
+	margin-left: 10px;
+    }
+
+    .imagemaker_itemlist ul li {
+	width: 33.2%;
+    }
+
+    .imagemaker_parts_menu {
+	height: 68px;
+    }
+
+    .imagemaker_parts_menu ul li {
+	width: 60px;
+	height: auto;
+    }
+
+    .imagemaker_ctrl_buttons .button_show_itemlist {
+	width: 50px;
+	height: 50px;
+	line-height: 50px;
+    }
+
+    .imagemaker_ctrl_buttons .button_show_colorpalette {
+	align-items: center;
+	width: 50px;
+	height: 50px;
+	line-height: 50px;
+	left: -55px;
+    }
+
+    .imagemaker_colorpalette ul li {
+	width: 48px;
+	height: 48px;
+    }
+}
+
+@media (orientation: portrait) {
+    .imagemaker_container_wrapper {
+	width: 95vw;
+	min-height: 95vh;
+    }
+
+    .imagemaker_container {
+	flex-direction: column;
+    }
+
+    .imagemaker_canvas_wrapper {
+	max-height: 50%;
+    }
+
+    .imagemaker_save_button {
+	height: 4vh;
+	font-size: 3vh;
+    }
+
+    .imagemaker_ctrl_buttons {
+	bottom: 4px;
+	right: 4px;
+	top: auto;
+	left: auto;
+    }
+
+    .imagemaker_control_wrapper {
+	position: relative;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	height: 100%
+    }
+
+    .imagemaker_info_show_button {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	bottom: auto;
+	left: auto;
+	height: 6vh;
+	width: 6vh;
+	font-size: 5vh
+    }
+
+    .imagemaker_parts_menu_wrapper {
+	padding-left: 18.18%;
+    }
+
+    .imagemaker_parts_menu ul {
+	margin-left: 0px;
+    }
+
+    .imagemaker_itemlist ul li {
+	width: 23.75%;
+    }
+
+    .imagemaker_parts_menu_wrapper {
+	min-height: 10vh;
+    }
+    
+    .imagemaker_parts_menu {
+	height: 100%;
+    }
+
+     .imagemaker_parts_menu ul {
+	width: auto;
+	height: 100%;
+     }
+     
+    .imagemaker_parts_menu ul li {
+	width: 9vh;
+	height: 9vh;
+    }
+
+    .imagemaker_parts_menu ul li img {
+	width: 100%;
+	height: 100%;
+	position: relative;
+    }
+
+    .imagemaker_random_button {
+	font-size: 4vw;
+    }
+
+    .imagemaker_ctrl_buttons {
+	width: 6vh;
+	height: 6vh;
+    }
+
+    .imagemaker_ctrl_buttons .button_show_colorpalette {
+	width: 6vh;
+	height: 6vh;
+	line-height: 6vh;
+	left: -10vh;
+	bottom: 4px;
+    }
+
+    .imagemaker_ctrl_buttons .button_show_itemlist {
+	width: 6vh;
+	height: 6vh;
+	bottom: 4px;
+	right: 4px;
+    }
+
+    .imagemaker_colorpalette ul li {
+	width: 8vh;
+	height: 8vh;
+    }
+    
+}
+
 .imagemaker_container_wrapper {
-    width: 400px;
     position: relative;
     margin: 0 auto;
     height: 100%;
@@ -56,7 +257,6 @@ body {
     position: relative;
     height: 100%;
     display: flex;
-    flex-direction: column;
     overflow: hidden;
     background-color: var(--image-background-color, hsla(0,0%,93.3%,.5));
     background-image: var(--image-background-png, none);
@@ -66,10 +266,31 @@ body {
 
 .imagemaker_canvas_wrapper {
     position: relative;
-    max-height: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.imagemaker_save_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    padding: 4px 8px;
+    background: var(--save-button-color, #555555);
+    border-radius: 4px;
+    text-align: center;
+    word-break: break-all;
+    color: #fff;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: auto;
+    bottom: 4px;
+    left: 4px;
+    background-image: var(--download-button-png, "none");
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .imagemaker_canvas_wrapper canvas {
@@ -81,35 +302,9 @@ body {
     object-fit: scale-down;
 }
 
-.imagemaker_save_button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: auto;
-    height: 36px;
-    padding: 4px 8px;
-    background: var(--save-button-color, #555555);
-    border-radius: 4px;
-    text-align: center;
-    word-break: break-all;
-    color: #fff;
-    cursor: pointer;
-    position: absolute;
-    top: auto;
-    right: auto;
-    bottom: 4px;
-    left: 4px;
-    background-image: var(--download-button-png, "none");
-    background-position: center;
-    background-repeat: no-repeat;
-}
 
 .imagemaker_ctrl_buttons {
     position: absolute;
-    top: auto;
-    right: 4px;
-    bottom: 4px;
-    left: auto;
     width: 50px;
     height: 50px;
     z-index: 0;
@@ -130,7 +325,6 @@ body {
 }
 
 .imagemaker_parts_menu {
-    height: 68px;
     overflow: auto;
     margin: 0;
     white-space: nowrap;
@@ -140,7 +334,9 @@ body {
 }
 
 .imagemaker_parts_menu ul {
-    margin: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
     padding: 0;
     position: relative;
     list-style: "none";
@@ -148,8 +344,6 @@ body {
 
 .imagemaker_parts_menu ul li {
     position: relative;
-    width: 60px;
-    height: auto;
     min-width: 48px;
     margin: 4px 2px 4px 2px;
     display: inline-flex;
@@ -168,7 +362,6 @@ body {
     background-color: var(--random-button-color, #ffbd16);
     color: #fff;
     text-align: center;
-    font-size: 14px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -211,8 +404,7 @@ body {
 }
 
 .imagemaker_itemlist ul li {
-    width: 23.75%;
-    margin: 2px;
+    margin: 5px;
     background-color: var(--item-button-color, #fff);
     border-radius: 4px;
     position: flex;
@@ -229,24 +421,10 @@ body {
     height: 100%;
 }
 
-
-.imagemaker_ctrl_buttons {
-    position: absolute;
-    top: auto;
-    right: 4px;
-    bottom: 4px;
-    left: auto;
-    width: 50px;
-    height: 50px;
-    z-index: 0;
-}
-
 .imagemaker_ctrl_buttons .button_show_itemlist {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
     background-color: var(--item-toggle-color, #fff);
     background-image: var(--item-toggle-png, "none");
     background-position: center;
@@ -256,7 +434,6 @@ body {
     cursor: pointer;
     text-align: center;
     position: absolute;
-    line-height: 50px;
 }
 
 .imagemaker_ctrl_buttons .button_show_controller {
@@ -285,8 +462,6 @@ body {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
     background-color: var(--palette-toggle-color, #fff);
     background-image: var(--palette-toggle-png, "none");
     background-position: center;
@@ -297,8 +472,6 @@ body {
     cursor: pointer;
     text-align: center;
     position: absolute;
-    line-height: 50px;
-    left: -55px;
 }
 
 .imagemaker_ctrl_buttons .button_show_itemlist.selected {
@@ -306,16 +479,9 @@ body {
 }
 
 .imagemaker_info_show_button {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    bottom: auto;
-    left: auto;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
     background-color: var(--info-toggle-color, #fff);
     background-image: var(--info-toggle-png, "none");
     background-position: center;
@@ -370,7 +536,8 @@ body {
 
 .imagemaker_colorpalette {
     flex: 1;
-    display: flex;
+    /*display: flex;*/
+    display: none;
     align-items: center;
     justify-content: center;
     overflow: auto;
@@ -381,14 +548,12 @@ body {
 .imagemaker_colorpalette ul {
     padding: 0;
     font-size: 0;
-    width: 300px;
+    width: 100%;
     margin: auto;
     text-align: center;
 }
 
 .imagemaker_colorpalette ul li {
-    width: 48px;
-    height: 48px;
     margin: 1px;
     border-radius: 50%;
     border: 2px solid #eee;
@@ -405,3 +570,4 @@ body {
     vertical-align: middle;
     font-size: 1rem;
 }
+
