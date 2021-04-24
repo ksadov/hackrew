@@ -1,6 +1,6 @@
 ## Info
 
-hackrew is a framework for making character creator/dressup game applets a la [picrew](https://picrew.me/). To make your own character creator, fork this repo or download the files and follow the instructions below.
+hackrew is a framework for making character creator/dressup game applets a la [picrew](https://picrew.me/). You can check out an online demo [here](https://ksadov.github.io/hackrew/). To make your own character creator, fork this repo or download the files and follow the instructions below.
 
 ## Instructions
 
@@ -34,3 +34,4 @@ To change the colors and graphics of the UI, edit the variables at the top of in
 Expand and revise Instructions
 Try hosting on Neocities, maybe add a section with instructions for that
 Add item shift button or draggable items?
+Add .svg files for brush and item icons
