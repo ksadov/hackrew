@@ -474,10 +474,6 @@ body {
     position: absolute;
 }
 
-.imagemaker_ctrl_buttons .button_show_itemlist.selected {
-    color: #ff597e;
-}
-
 .imagemaker_info_show_button {
     display: inline-flex;
     justify-content: center;

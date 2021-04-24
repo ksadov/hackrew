@@ -25,6 +25,7 @@ window.addEventListener('load', function(ev) {
     ];
 
     // code below this line controls functionality
+    // dw about if you're just editing visual assets
 
     /* relative path to the folder containing part folders */
     const assets_path = "imagemaker_assets/"
