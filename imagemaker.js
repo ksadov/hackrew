@@ -327,7 +327,7 @@ window.addEventListener('load', function(ev) {
 	    let newImg = itemImages[partId][itemId][selectedColors[partId]];
 	    let newSelLayer = await(newLayer(newImg));
 	    layerStack[partId] = newSelLayer;
-	    selectedItemNames[partId] = newImg.split('_')[0] + "_" + newImg.split('_')[1];
+	    selectedItemNames[partId] = newImg.split('_')[0];
 	}
 	await renderLayerStack();
 	return null;
