@@ -28,7 +28,7 @@ window.addEventListener('load', function(ev) {
     // dw about if you're just editing visual assets
 
     /* relative path to the folder containing part folders */
-    const assets_path = "imagemaker_assets/"
+    const assets_path = "imagemakerAssets/"
     
     // DOM Elements
     const canvas = document.getElementById("my-canvas-object");
@@ -327,7 +327,7 @@ window.addEventListener('load', function(ev) {
 	    let newImg = itemImages[partId][itemId][selectedColors[partId]];
 	    let newSelLayer = await(newLayer(newImg));
 	    layerStack[partId] = newSelLayer;
-	    selectedItemNames[partId] = newImg.split('_')[0];
+	    selectedItemNames[partId] = newImg.split('_')[0] + "_" + newImg.split('_')[1];
 	}
 	await renderLayerStack();
 	return null;

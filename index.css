@@ -14,16 +14,16 @@
     --item-button-color: #fff;
     /* the color/image filepath of the item menu toggle button */
     --item-toggle-color: #fff;
-    --item-toggle-png: url("imagemaker_assets/item_toggle.png");
+    --item-toggle-png: url("imagemakerAssets/item_toggle.png");
     /* the color/image filepath of the palette toggle button */
     --palette-toggle-color: #fff;
-    --palette-toggle-png: url("imagemaker_assets/palette_toggle.png");
+    --palette-toggle-png: url("imagemakerAssets/palette_toggle.png");
     /* the color/image filepath of the info button */
     --info-toggle-color: #fff;
     --info-toggle-png: "none";
     /* the color/image filepath of the info button */
     --move-toggle-color: #fff;
-    --move-toggle-png: url("imagemaker_assets/move_toggle.png");
+    --move-toggle-png: url("imagemakerAssets/move_toggle.png");
     /* the image filepath of the logo */
     --logo-png: "none";
     --save-button-color: #00b33c;
