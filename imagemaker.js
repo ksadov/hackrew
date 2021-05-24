@@ -3,32 +3,38 @@ window.addEventListener('load', function(ev) {
     const parts = [
 	{ folder: "body",
 	  items: ["sleek", "fluffy"],
-	  colors: ["#FFFFFF", "#FFBD6C"],
+	  colorMode: "multiply",
+	  colors: ["#FFBD6C", "#FFFFFF"],
 	  noneAllowed: false
 	},
 	{ folder: "ears",
 	  items: ["small", "big"],
+	  colorMode: "fromPng",
 	  colors: ["#FFFFFF", "#FFBD6C", "#BBDE49"],
 	  noneAllowed: true
 	},
 	{ folder: "tail",
 	  items: ["long", "short"],
+	  colorMode: "fromPng",
 	  colors: ["#FFFFFF", "#FFBD6C"],
 	  noneAllowed: false,
 	  moveable: false
 	},
 	{ folder: "accessories",
 	  items: ["bow", "crown"],
+	  colorMode: null,
 	  colors: [],
 	  noneAllowed: true
 	}
-    ];
+	];
 
     // code below this line controls functionality
     // dw about if you're just editing visual assets
 
+    /* r, g, b values of fill color*/
+    const fillColor = [255, 255, 255];
     /* relative path to the folder containing part folders */
-    const assets_path = "imagemakerAssets/"
+    const assetsPath = "imagemakerAssets/"
     
     // DOM Elements
     const canvas = document.getElementById("my-canvas-object");
@@ -62,10 +68,11 @@ window.addEventListener('load', function(ev) {
     /* 1d array of full paths to items currently selected, sans _{colorIndex} suffix, 
        where selectedItemNames[i] is the selected item of part i*/
     let selectedItemNames = []
+    let selectedItemIndex = []
     
     init();
 
-    async function init() {
+    async function init() {	
 	initButtons();
 	await initArrays();
 	initPalette();
@@ -159,11 +166,13 @@ window.addEventListener('load', function(ev) {
 	    let newItem = itemImages[i][itemIndex];
 	    if (newItem) {
 		layerStack[i] = await(newLayer(newItem[colorIndex]));
-		selectedItemNames[i] = newItem[colorIndex].split('_')[0];
+		selectedItemNames[i] = (parts[i].colorMode === "fill") ? newItem[colorIndex] : newItem[colorIndex].split('_')[0];
+		selectedItemIndex[i] = itemIndex;
 	    }
 	    else {
 		layerStack[i] = null;
 		selectedItemNames[i] = null;
+		selectedItemIndex[i] = null;
 	    }
 	    for (j = 0; j < itemRange; j++) {
 		if (j == itemIndex) {
@@ -219,7 +228,7 @@ window.addEventListener('load', function(ev) {
 	for (let i = 0; i < parts.length; i++) {	
 	    let part = document.createElement('li');
 	    let partIcon = document.createElement('img');
-	    partIcon.src = assets_path + parts[i].folder + "/icon.png";
+	    partIcon.src = assetsPath + parts[i].folder + "/icon.png";
 	    part.appendChild(partIcon);
 	    part.id = "part_" + i.toString();
             document.getElementById('parts_list').appendChild(part);
@@ -242,7 +251,7 @@ window.addEventListener('load', function(ev) {
 	    if (parts[i].noneAllowed) {
 		let noneButton = document.createElement('li');
 		let noneButtonIcon = document.createElement('img');
-		noneButtonIcon.src = assets_path + "none_button.png";
+		noneButtonIcon.src = assetsPath + "none_button.png";
 		noneButton.appendChild(noneButtonIcon);
 		document.getElementById("itemlist_list").appendChild(noneButton);
 		noneButton.style.display = "none";
@@ -284,21 +293,33 @@ window.addEventListener('load', function(ev) {
 	    }
 	    for (let j = 0; j < parts[i].items.length; j++) {
 		let item_index = j + Number(parts[i].noneAllowed);
-		if (parts[i].colors.length === 0) {
-		    itemImages[i][item_index][0] = (assets_path +
-						    parts[i].folder + "/" +
-						    parts[i].items[j] + ".png");
-		}
-		else {
+		if (parts[i].colorMode === "fromPng") {
 		    for (let k = 0; k < parts[i].colors.length; k++) {
-			itemImages[i][item_index][k] = (assets_path +
+			itemImages[i][item_index][k] = (assetsPath +
 							parts[i].folder + "/" +
 							parts[i].items[j] + "_" +
 							k + ".png");
 		    }
 		}
+		else if (parts[i].colorMode === "fill" || parts[i].colorMode === "multiply") {
+		    let templatePath = (assetsPath +
+					 parts[i].folder + "/" +
+					parts[i].items[j] + ".png");
+		    let template = await(newLayer(templatePath));
+		    for (let k = 0; k < parts[i].colors.length; k++) {
+			let blob = await(makeImageBlob(template, parts[i].colors[k], parts[i].colorMode === "multiply"));
+			let url = URL.createObjectURL(blob);
+			itemImages[i][item_index][k] = url;
+		    }
+		}
+		else if (parts[i].colorMode === null) {
+		    itemImages[i][item_index][0] = (assetsPath +
+						    parts[i].folder + "/" +
+						    parts[i].items[j] + ".png");
+		}
 	    }
 	}
+	console.log(itemImages);
 	return null;
     }
 
@@ -322,12 +343,14 @@ window.addEventListener('load', function(ev) {
 	if (selectedNone) {
 	    layerStack[partId] = null;
 	    selectedItemNames[partId] = null;
+	    selectedItemIndex[partId] = null;
 	}
 	else {
 	    let newImg = itemImages[partId][itemId][selectedColors[partId]];
 	    let newSelLayer = await(newLayer(newImg));
 	    layerStack[partId] = newSelLayer;
-	    selectedItemNames[partId] = newImg.split('_')[0];
+	    selectedItemNames[partId] = (parts[partId].colorMode === "fill") ? newImg : newImg.split('_')[0];
+	    selectedItemIndex[partId] = itemId;
 	}
 	await renderLayerStack();
 	return null;
@@ -431,7 +454,12 @@ window.addEventListener('load', function(ev) {
     async function selectColor(partId, colorId) {
 	selectedColors[partId] = colorId;
 	if (selectedItemNames[partId]) {
-	    let newImgFile = selectedItemNames[partId] + "_" + colorId.toString() + ".png";
+	    /*
+	    let newImgFile = (parts[partId].colorMode === "fill") ?
+		selectedItemNames[partId] :
+		selectedItemNames[partId] + "_" + colorId.toString() + ".png";
+	    */
+	    let newImgFile = itemImages[partId][selectedItemIndex[partId]][colorId];
 	    let colorLayer = await newLayer(newImgFile);
 	    layerStack[partId] = colorLayer;
 	    await renderLayerStack();
@@ -450,5 +478,46 @@ window.addEventListener('load', function(ev) {
 	    let newIconSrc = itemImages[partId][itemId][colorId];
 	    partIcon.src = newIconSrc;
 	}
+    }
+
+    async function makeImageBlob(template, color, multiply) {
+	// Create a canvas element
+	var canvas = document.createElement('canvas');
+	canvas.width = 600;
+	canvas.height = 600;
+	canvas.style.display = "none";
+
+	// Get the drawing context
+	ctx = canvas.getContext('2d');
+	ctx.drawImage(template, 0, 0, 600, 600);
+	/*
+	ctx.beginPath();
+	ctx.rect(20, 20, 150, 100);
+	ctx.stroke();
+*/
+	let templateImg = ctx.getImageData(0, 0, 600, 600);
+	let templateData = templateImg.data;
+	let colorR = parseInt("0x" + color.substring(1, 3));
+	let colorG = parseInt("0x" + color.substring(3, 5));
+	let colorB = parseInt("0x" + color.substring(5, 7));
+	for (let pixId = 0; pixId < template.width * template.height; pixId++) {
+	    if (multiply) {
+		templateData[4 * pixId] = (templateData[4 * pixId]/255) * (colorR/255) * 255;
+		templateData[4 * pixId + 1] = (templateData[4 * pixId + 1]/255) * (colorG/255) * 255;
+		templateData[4 * pixId + 2] = (templateData[4 * pixId + 2]/255) * (colorB/255) * 255;
+	    }
+	    else {
+		if (templateData[4 * pixId] === fillColor[0] &
+		    templateData[4 * pixId + 1] === fillColor[1] &
+		    templateData[4 * pixId + 2] === fillColor[2]) {
+		    templateData[4 * pixId] = colorR;
+		    templateData[4 * pixId + 1] = colorG;
+		    templateData[4 * pixId + 2] = colorB;
+		}
+	    }
+	}
+	await ctx.putImageData(templateImg, 0, 0);
+	let blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+	return blob;
     }
 } ,false);
