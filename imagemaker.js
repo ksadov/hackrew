@@ -151,6 +151,7 @@ window.addEventListener('load', function(ev) {
 	    paletteButton.style.display = "inline-flex";
 	}
 	updatePalette();
+	toggleItems();
 	return null;
     }
     
