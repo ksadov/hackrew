@@ -15,7 +15,7 @@ window.addEventListener('load', function(ev) {
 	},
 	{ folder: "tail",
 	  items: ["long", "short"],
-	  colorMode: "fromPng",
+	  colorMode: "fill",
 	  colors: ["#FFFFFF", "#FFBD6C"],
 	  noneAllowed: false,
 	  moveable: false
@@ -32,7 +32,7 @@ window.addEventListener('load', function(ev) {
     // dw about if you're just editing visual assets
 
     /* r, g, b values of color that "fill" color mode fills in with color*/
-    const fillColor = [255, 255, 255];
+    const fillColor = [123, 123, 123];
     
     /* relative path to the folder containing part folders */
     const assetsPath = "imagemakerAssets/"
