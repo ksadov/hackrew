@@ -12,7 +12,9 @@ The applet won't run correctly unless it's launched from a server. To launch it 
 
 The character creator applet's visual components are comprised of "parts" (ex: "body", "ears", "tail", "accessories"), which have varieties called "items" (ex: the items for ears are "small" and "big"). Each item is represented by a .png image with a transparent background. The applet allows the user to create different characters by layering different item .pngs on top of each other.
 
-All item .png files must have the same dimensions. To ensure that the items line up correctly when layered, I recommend drawing items on different layers of the same file in a digital art program like Gimp or Procreate, then saving each layer seperately as a .png. Each part can come in multiple colors (ex: ears can be white, orange or green). You'll need to create a seperate .png of each item in each color that you choose to assign a part. 
+All item .png files must have the same dimensions. To ensure that the items line up correctly when layered, I recommend drawing items on different layers of the same file in a digital art program like Gimp or Procreate, then saving each layer seperately as a .png.
+
+Each part can come in multiple colors (ex: ears can be white, orange or green). Parts can have three color modes: `"fill"`, `"multiply"` and `"fromPng"`. Parts with `"fill"` mode have all pixels of the value `(123, 123, 123, alpha)` set to a selected color with the alpha value preserved. Parts with the mode `"multiply"` are treated as an alpha-preserving multiply layer over each color. Parts with the mode `"fromPng"` require you to create a seperate .png of each item in each color that you choose to assign a part. 
 
 ### Step 3: integrate assets into the code
 First, edit the `width` and `height` fields of the `"my-canvas-object"` element on line 18 of the file index.html to reflect the actual size of your item .png files in pixels.
@@ -21,17 +23,22 @@ Parts are listed in the variable `parts` at the top of imagemaker.js in the orde
 ```
 	{ folder: "ears",
 	  items: ["small", "big"],
+	  colorMode: "fromPng",
 	  colors: ["#FFFFFF", "#FFBD6C", "#BBDE49"],
 	  noneAllowed: true
 	},
 ```
-Then create a subfolder in imagemakerAssets whose name is the value of the `folder` field (ex: imagemaker_assets/ears). Add an image file named icon.png to the folder: this will be the icon of the part in the part select menu. For every item in the `items` field and every color in color, add a png image of that item with a filename of the form {items[n]}_{m}.png, where items[n] is the item at index n in the array `items` and `m` is an index of the color array. (ex: imagemaker_assets/ears/small_0.png is a png of small ears in the color #FFFFFF, imagemaker_assets/ears/big_2 is a png of big ears in the color "#BBDE49"). If the colors field is an empty array, then filenames should just have the form {items[n}.png (ex: imagemaker_assets/accessories/bow.png, imagemaker_assets/accessories/crown.png).
+Then create a subfolder in imagemakerAssets whose name is the value of the `folder` field (ex: imagemaker_assets/ears). Add an image file named icon.png to the folder: this will be the icon of the part in the part select menu. If the colorMode is `"fill"` or `"multiply"` or the color field is an empty array, then filenames should just have the form {items[n}.png (ex: imagemaker_assets/accessories/bow.png, imagemaker_assets/accessories/crown.png). If the colorMode is `"fromPng"`, then for every item in the `items` field and every color in color, add a png image of that item with a filename of the form {items[n]}_{m}.png, where items[n] is the item at index n in the array `items` and `m` is an index of the color array. (ex: imagemaker_assets/ears/small_0.png is a png of small ears in the color #FFFFFF, imagemaker_assets/ears/big_2 is a png of big ears in the color "#BBDE49").
+
 
 ### Step 4: edit the UI
 To change the colors and graphics of the UI, edit the variables at the top of index.css.
 
 ## TODO
 Expand and revise Instructions
+
 Try hosting on Neocities, maybe add a section with instructions for that
+
 Add item shift button or draggable items?
+
 Add .svg files for brush and item icons

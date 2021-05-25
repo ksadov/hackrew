@@ -31,8 +31,9 @@ window.addEventListener('load', function(ev) {
     // code below this line controls functionality
     // dw about if you're just editing visual assets
 
-    /* r, g, b values of fill color*/
+    /* r, g, b values of color that "fill" color mode fills in with color*/
     const fillColor = [255, 255, 255];
+    
     /* relative path to the folder containing part folders */
     const assetsPath = "imagemakerAssets/"
     
@@ -319,7 +320,6 @@ window.addEventListener('load', function(ev) {
 		}
 	    }
 	}
-	console.log(itemImages);
 	return null;
     }
 
@@ -383,7 +383,7 @@ window.addEventListener('load', function(ev) {
     /**
      * Force newLayer to wait until an image is fully loaded before assigning it to layerStack
      *
-     * @image {string} the path to the Image source .png
+     * @path {string} the path to the Image source .png
      */
     function loadImage(path) {
         return new  Promise(resolve => {
@@ -480,21 +480,24 @@ window.addEventListener('load', function(ev) {
 	}
     }
 
+    /**
+     * Create a Blob of an image in a particular color based on a template
+     *
+     * @template {Image} the recolor base
+     * @color {hex string}
+     * @multiply {bool} If true, treat the template as an alpha-preserving 
+     *                  multiply layer. If false, fill the fillColor pixels
+     *                  with @color and preserve alpha.
+     */ 
     async function makeImageBlob(template, color, multiply) {
-	// Create a canvas element
 	var canvas = document.createElement('canvas');
 	canvas.width = 600;
 	canvas.height = 600;
 	canvas.style.display = "none";
 
-	// Get the drawing context
 	ctx = canvas.getContext('2d');
 	ctx.drawImage(template, 0, 0, 600, 600);
-	/*
-	ctx.beginPath();
-	ctx.rect(20, 20, 150, 100);
-	ctx.stroke();
-*/
+
 	let templateImg = ctx.getImageData(0, 0, 600, 600);
 	let templateData = templateImg.data;
 	let colorR = parseInt("0x" + color.substring(1, 3));
