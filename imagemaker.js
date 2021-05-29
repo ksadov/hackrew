@@ -27,9 +27,6 @@ window.addEventListener('load', function(ev) {
 	  noneAllowed: true
 	}
 	];
-
-    const WIDTH = 600;
-    const HEIGHT = 600;
     
     // code below this line controls functionality
     // dw about if you're just editing visual assets
@@ -43,6 +40,10 @@ window.addEventListener('load', function(ev) {
     // DOM Elements
     const canvas = document.getElementById("my-canvas-object");
     const context = canvas.getContext('2d');
+
+    const WIDTH = canvas.width;
+    const HEIGHT = canvas.height;
+    
     const randomButton = document.getElementById("random_button");
     const infoButton = document.getElementById("info_button");
     const paletteButton = document.getElementById("palette_button");
@@ -53,6 +54,8 @@ window.addEventListener('load', function(ev) {
     /* 2d array of item select button DOM elements */
     const itemsElements = [];
 
+    /* Render layers to this 1st and then canvas so that images render all at 
+       once instead of one layer at a time */
     const workingCanvas = document.createElement('canvas');
     workingCanvas.height = HEIGHT;
     workingCanvas.width = WIDTH;
@@ -85,6 +88,9 @@ window.addEventListener('load', function(ev) {
 	await updateSelectedPart(0);
     }
 
+    /**
+     * Assign canvases to list of layer canvases
+     */
     function initCanvases() {
 	for (let partIdx = 0; partIdx < parts.length; partIdx++) {
 	    let cnv = document.createElement('canvas');
