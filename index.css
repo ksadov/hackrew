@@ -132,6 +132,10 @@ body {
 	width: 48px;
 	height: 48px;
     }
+
+    .imagemaker_info_content {
+	font-size: 3vh;
+    }
 }
 
 @media (orientation: portrait) {
@@ -527,7 +531,6 @@ body {
 
 .imagemaker_info_content {
     margin: 10px;
-    font-size: 14px;
 }
 
 .imagemaker_colorpalette {

@@ -28,6 +28,9 @@ window.addEventListener('load', function(ev) {
 	}
 	];
 
+    const WIDTH = 600;
+    const HEIGHT = 600;
+    
     // code below this line controls functionality
     // dw about if you're just editing visual assets
 
@@ -49,7 +52,11 @@ window.addEventListener('load', function(ev) {
     const partsElements = [];
     /* 2d array of item select button DOM elements */
     const itemsElements = [];
-    
+
+    const workingCanvas = document.createElement('canvas');
+    workingCanvas.height = HEIGHT;
+    workingCanvas.width = WIDTH;
+    const workingContext = workingCanvas.getContext('2d');
 
     // global state variables
     /* Is the extra info screen currently visible? */
@@ -58,28 +65,33 @@ window.addEventListener('load', function(ev) {
     let paletteVisible = false;  
     /* Index of part whose menu is currently displayed */
     let selectedPart = 0;
-    /* 3d array of item .png full paths where itemImages[i][j][k] is 
-       part i, item (j + noneAllowed), color k and item[i][0] is null if noneAllowed*/
-    const itemImages = []
-    /* 1d array of Loaded Images that should be rendered on the canvas, where
-       layerStack[i] is an item of part i in color selectedColors[i]*/
-    const layerStack = []
     /* 1d array of colors where selectedColors[i] is the color selected for part i */
     let selectedColors = []  
-    /* 1d array of full paths to items currently selected, sans _{colorIndex} suffix, 
+    /* 1d array of indices of items currently selected, sans _{colorIndex} suffix, 
        where selectedItemNames[i] is the selected item of part i*/
-    let selectedItemNames = []
     let selectedItemIndex = []
+
+    const layerCanvases = [];
     
     init();
 
     async function init() {	
 	initButtons();
+	initCanvases()
 	await initArrays();
 	initPalette();
 	await initItemFunctions();
 	await randomize();
 	await updateSelectedPart(0);
+    }
+
+    function initCanvases() {
+	for (let partIdx = 0; partIdx < parts.length; partIdx++) {
+	    let cnv = document.createElement('canvas');
+	    cnv.height = HEIGHT;
+	    cnv.width = WIDTH;
+	    layerCanvases.push(cnv);
+	}
     }
 
     /**
@@ -94,11 +106,10 @@ window.addEventListener('load', function(ev) {
     }
 
     /**
-     * Initialize partsElements, itemsElements, itemImages
+     * Initialize partsElements, itemsElements
      */
     async function initArrays() {
 	initPartsElements();
-	await initItemImages();
 	initItemsElements();
 	return null;
     }
@@ -160,22 +171,12 @@ window.addEventListener('load', function(ev) {
      */ 
     async function randomize() {
 	for (let i = 0; i < parts.length; i++) {
-	    let itemRange = parts[i].items.length + Number(parts[i].noneAllowed);
+	    let itemRange = parts[i].items.length;
 	    let itemIndex = Math.floor(Math.random() * itemRange);
 	    let colorRange = parts[i].colors.length;
 	    let colorIndex = Math.floor(Math.random() * colorRange);
 	    selectedColors[i] = colorIndex;
-	    let newItem = itemImages[i][itemIndex];
-	    if (newItem) {
-		layerStack[i] = await(newLayer(newItem[colorIndex]));
-		selectedItemNames[i] = (parts[i].colorMode === "fill") ? newItem[colorIndex] : newItem[colorIndex].split('_')[0];
-		selectedItemIndex[i] = itemIndex;
-	    }
-	    else {
-		layerStack[i] = null;
-		selectedItemNames[i] = null;
-		selectedItemIndex[i] = null;
-	    }
+	    selectedItemIndex[i] = itemIndex;
 	    for (j = 0; j < itemRange; j++) {
 		if (j == itemIndex) {
 		    itemsElements[i][j].classList.add("selected");
@@ -183,9 +184,6 @@ window.addEventListener('load', function(ev) {
 		else {
 		    itemsElements[i][j].classList.remove("selected");
 		}
-	    }
-	    if (colorRange > 0) {
-		updateIcons(i, colorIndex);
 	    }
 	}
 	await renderLayerStack();
@@ -208,17 +206,21 @@ window.addEventListener('load', function(ev) {
 	}
 	return null;
     }
-
+	
     /**
      * Render Images in layerStack to canvas and update save URL
      */
-    async function renderLayerStack() {	
-	await clearCanvas();
-	for (let layer = 0; layer < layerStack.length; layer++) {
-	    if (layerStack[layer]) {
-		context.drawImage(layerStack[layer], 0, 0);
+    async function renderLayerStack() {
+	clearCanvas(workingCanvas);
+	for (let partId = 0; partId < parts.length; partId++) {
+	    clearCanvas(layerCanvases[partId]);
+	    if (selectedItemIndex[partId] !== null) {
+		await imageFromIndex(partId, selectedItemIndex[partId], selectedColors[partId]);
 	    }
+	    workingContext.drawImage(layerCanvases[partId], 0, 0);
 	}
+	clearCanvas(canvas);
+	context.drawImage(workingCanvas, 0, 0);
 	await updateSave();
 	return null;
     }
@@ -259,11 +261,15 @@ window.addEventListener('load', function(ev) {
 		noneButton.style.display = "none";
 		itemsElements[i][0] = noneButton;
  	    }
+	    let mode = parts[i].colorMode;
+	    let pngSuffix = (mode == "fromPng") ? "_0" : "";
 	    for (let j = 0; j < parts[i].items.length; j++) {
 		let item = document.createElement('li');
 		let itemIcon = document.createElement('img');
 		itemIcon.id = "icon_" + i.toString() + "_" + j.toString();
-		itemIcon.src = itemImages[i][j + Number(parts[i].noneAllowed)][0]
+		itemIcon.src = (assetsPath +
+				parts[i].folder + "/" +
+				parts[i].items[j] + pngSuffix + ".png");
 		item.appendChild(itemIcon);
 		item.id = "item_" + i.toString() + "_" + j.toString();
 		item.style.display = "none";
@@ -274,62 +280,12 @@ window.addEventListener('load', function(ev) {
 	return null;
      }
 
-    /**
-     * Initialize itemImages
-     *
-     */
-    async function initItemImages() {
-	for (let i = 0; i < parts.length; i++) {
-	    let selectableCount =  parts[i].items.length + Number(parts[i].noneAllowed);
-	    itemImages.push([]);
-	    for (let j = 0; j < selectableCount; j++) {
-		itemImages[i].push([]);
-		for (let k = 0; k < parts[i].colors.length; k++) {
-		    itemImages[i][j].push(null);
-		}
-	    }
-	}
-	for (let i = 0; i < parts.length; i++) {
-	    if (parts[i].noneAllowed) {
-		itemImages[i][0] = null;
-	    }
-	    for (let j = 0; j < parts[i].items.length; j++) {
-		let item_index = j + Number(parts[i].noneAllowed);
-		if (parts[i].colorMode === "fromPng") {
-		    for (let k = 0; k < parts[i].colors.length; k++) {
-			itemImages[i][item_index][k] = (assetsPath +
-							parts[i].folder + "/" +
-							parts[i].items[j] + "_" +
-							k + ".png");
-		    }
-		}
-		else if (parts[i].colorMode === "fill" || parts[i].colorMode === "multiply") {
-		    let templatePath = (assetsPath +
-					 parts[i].folder + "/" +
-					parts[i].items[j] + ".png");
-		    let template = await(newLayer(templatePath));
-		    for (let k = 0; k < parts[i].colors.length; k++) {
-			let blob = await(makeImageBlob(template, parts[i].colors[k], parts[i].colorMode === "multiply"));
-			let url = URL.createObjectURL(blob);
-			itemImages[i][item_index][k] = url;
-		    }
-		}
-		else if (parts[i].colorMode === null) {
-		    itemImages[i][item_index][0] = (assetsPath +
-						    parts[i].folder + "/" +
-						    parts[i].items[j] + ".png");
-		}
-	    }
-	}
-	return null;
-    }
-
-    async function clearCanvas() {
-	return (context.clearRect(0, 0, canvas.width, canvas.height));
+    function clearCanvas(canvas) {
+	return (canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height));
     }
 
     /**
-     * Update UI to visibly select a part[partId].items[itemId] and render it to the canvas
+     * Update UI to visibly select a parts[partId].items[itemId] and render it to the canvas
      */
     async function updateSelectedItem(partId, itemId) {
 	for (let j = 0; j < (parts[partId].items.length +  Number(parts[partId].noneAllowed)); j++) {
@@ -340,18 +296,12 @@ window.addEventListener('load', function(ev) {
 		itemsElements[partId][j].classList.remove("selected");
 	    }
 	}
-	let selectedNone = (itemImages[partId][itemId] == null);
+	let selectedNone = (parts[partId].noneAllowed && itemId == 0);
 	if (selectedNone) {
-	    layerStack[partId] = null;
-	    selectedItemNames[partId] = null;
 	    selectedItemIndex[partId] = null;
 	}
-	else {
-	    let newImg = itemImages[partId][itemId][selectedColors[partId]];
-	    let newSelLayer = await(newLayer(newImg));
-	    layerStack[partId] = newSelLayer;
-	    selectedItemNames[partId] = (parts[partId].colorMode === "fill") ? newImg : newImg.split('_')[0];
-	    selectedItemIndex[partId] = itemId;
+	else {	    
+	    selectedItemIndex[partId] = itemId - Number(parts[partId].noneAllowed);
 	}
 	await renderLayerStack();
 	return null;
@@ -454,57 +404,22 @@ window.addEventListener('load', function(ev) {
      */
     async function selectColor(partId, colorId) {
 	selectedColors[partId] = colorId;
-	if (selectedItemNames[partId]) {
-	    /*
-	    let newImgFile = (parts[partId].colorMode === "fill") ?
-		selectedItemNames[partId] :
-		selectedItemNames[partId] + "_" + colorId.toString() + ".png";
-	    */
-	    let newImgFile = itemImages[partId][selectedItemIndex[partId]][colorId];
-	    let colorLayer = await newLayer(newImgFile);
-	    layerStack[partId] = colorLayer;
+	if (selectedItemIndex[partId]) {
 	    await renderLayerStack();
 	}
-	await updateIcons(partId, colorId);
 	return null;
     }
 
-    /**
-     * Change the item icons for parts[partId] to parts[partId].colors[colorId]
-     */
-    async function updateIcons(partId, colorId) {
-	for (let j = 0; j < parts[partId].items.length; j++) {
-	    let itemId = j + Number(parts[partId].noneAllowed);
-	    let partIcon = document.getElementById("icon_" + partId.toString() + "_" + j.toString());
-	    let newIconSrc = itemImages[partId][itemId][colorId];
-	    partIcon.src = newIconSrc;
-	}
-    }
-
-    /**
-     * Create a Blob of an image in a particular color based on a template
-     *
-     * @template {Image} the recolor base
-     * @color {hex string}
-     * @multiply {bool} If true, treat the template as an alpha-preserving 
-     *                  multiply layer. If false, fill the fillColor pixels
-     *                  with @color and preserve alpha.
-     */ 
-    async function makeImageBlob(template, color, multiply) {
-	var canvas = document.createElement('canvas');
-	canvas.width = 600;
-	canvas.height = 600;
-	canvas.style.display = "none";
-
-	ctx = canvas.getContext('2d');
-	ctx.drawImage(template, 0, 0, 600, 600);
-
-	let templateImg = ctx.getImageData(0, 0, 600, 600);
+    function drawLayer(template, color, multiply, partId) {
+	clearCanvas(layerCanvases[partId]);
+	ctx = layerCanvases[partId].getContext('2d');
+	ctx.drawImage(template, 0, 0);
+	let templateImg = ctx.getImageData(0, 0, WIDTH, HEIGHT);
 	let templateData = templateImg.data;
 	let colorR = parseInt("0x" + color.substring(1, 3));
 	let colorG = parseInt("0x" + color.substring(3, 5));
-	let colorB = parseInt("0x" + color.substring(5, 7));
-	for (let pixId = 0; pixId < template.width * template.height; pixId++) {
+	let colorB = parseInt("0x" + color.substring(5, 7));		
+	for (let pixId = 0; pixId < template.width * template.height; pixId++) {	    
 	    if (multiply) {
 		templateData[4 * pixId] = (templateData[4 * pixId]/255) * (colorR/255) * 255;
 		templateData[4 * pixId + 1] = (templateData[4 * pixId + 1]/255) * (colorG/255) * 255;
@@ -520,8 +435,37 @@ window.addEventListener('load', function(ev) {
 		}
 	    }
 	}
-	await ctx.putImageData(templateImg, 0, 0);
-	let blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-	return blob;
+	ctx.putImageData(templateImg, 0, 0);
     }
+    
+    async function imageFromIndex(partIndex, itemIndex, colorIndex) {
+	let mode = parts[partIndex].colorMode;
+	if (mode == "fill" || mode == "multiply") {
+	    let templatePath = (assetsPath +
+				parts[partIndex].folder + "/" +
+				parts[partIndex].items[itemIndex] + ".png");
+	    let template = await(loadImage(templatePath));
+	    drawLayer(template, parts[partIndex].colors[colorIndex], mode === "multiply", partIndex);
+	}
+	else {
+	    
+	    let imgPath = (parts[partIndex].colors.length > 0)
+		?
+		(assetsPath +
+		 parts[partIndex].folder + "/" +
+		 parts[partIndex].items[itemIndex] + "_" +
+		 colorIndex + 
+		 ".png")
+		:
+		(assetsPath +
+		 parts[partIndex].folder + "/" +
+		 parts[partIndex].items[itemIndex] +
+		 ".png")
+		;
+	    let img = await(loadImage(imgPath));
+	    clearCanvas(layerCanvases[partIndex]);
+	    ctx = layerCanvases[partIndex].getContext('2d');
+	    ctx.drawImage(img, 0, 0); 
+	}
+    } 
 } ,false);
