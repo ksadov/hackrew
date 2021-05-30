@@ -2,9 +2,6 @@ window.addEventListener('load', function(ev) {
     let parts = [];
     // code below this line controls functionality
     // dw about if you're just editing visual assets
-
-    /* r, g, b values of color that "fill" color mode fills in with color*/
-    const fillColor = [123, 123, 123];
     
     /* relative path to the folder containing part folders */
     const assetsPath = "imagemakerAssets/"
@@ -102,11 +99,11 @@ window.addEventListener('load', function(ev) {
     /**
      * Create color select DOM elements for every part's colors
      */
-    function initPalette() {
+     function initPalette() {
 	for (let i = 0; i < parts.length; i++) {
 	    for (let j = 0; j < parts[i].colors.length; j++) {
 		let colorElement = document.createElement('li');
-		colorElement.style.backgroundColor = parts[i].colors[j];
+		colorElement.style.backgroundColor = "#" + parts[i].colors[j];
 		colorElement.addEventListener('click', function() {
 		    selectColor(i, j);
 		});
@@ -162,7 +159,7 @@ window.addEventListener('load', function(ev) {
 	    let colorRange = parts[i].colors.length;
 	    let colorIndex = Math.floor(Math.random() * colorRange);
 	    selectedColors[i] = colorIndex;
-	    if (noneCount === 1 && itemIndex === 0) {
+	    if (noneCount > 0 && itemIndex === 0) {
 		selectedItemIndex[i] = null;
 	    }
 	    else {
@@ -252,15 +249,13 @@ window.addEventListener('load', function(ev) {
 		noneButton.style.display = "none";
 		itemsElements[i][0] = noneButton;
  	    }
-	    let mode = parts[i].colorMode;
-	    let pngSuffix = (mode == "fromPng") ? "_" + parts[i].colors[0] : "";
 	    for (let j = 0; j < parts[i].items.length; j++) {
 		let item = document.createElement('li');
 		let itemIcon = document.createElement('img');
 		itemIcon.id = "icon_" + i.toString() + "_" + j.toString();
 		itemIcon.src = (assetsPath +
 				parts[i].folder + "/" +
-				parts[i].items[j] + pngSuffix + ".png");
+				parts[i].items[j] + ".png");
 		item.appendChild(itemIcon);
 		item.id = "item_" + i.toString() + "_" + j.toString();
 		item.style.display = "none";
@@ -395,68 +390,30 @@ window.addEventListener('load', function(ev) {
      */
     async function selectColor(partId, colorId) {
 	selectedColors[partId] = colorId;
-	if (selectedItemIndex[partId]) {
+	if (selectedItemIndex[partId] != null) {
 	    await renderLayerStack();
 	}
 	return null;
     }
-
-    function drawLayer(template, color, multiply, partId) {
-	clearCanvas(layerCanvases[partId]);
-	ctx = layerCanvases[partId].getContext('2d');
-	ctx.drawImage(template, 0, 0);
-	let templateImg = ctx.getImageData(0, 0, WIDTH, HEIGHT);
-	let templateData = templateImg.data;
-	let colorR = parseInt("0x" + color.substring(0, 2));
-	let colorG = parseInt("0x" + color.substring(2, 4));
-	let colorB = parseInt("0x" + color.substring(4, 6));		
-	for (let pixId = 0; pixId < template.width * template.height; pixId++) {	    
-	    if (multiply) {
-		templateData[4 * pixId] = (templateData[4 * pixId]/255) * (colorR/255) * 255;
-		templateData[4 * pixId + 1] = (templateData[4 * pixId + 1]/255) * (colorG/255) * 255;
-		templateData[4 * pixId + 2] = (templateData[4 * pixId + 2]/255) * (colorB/255) * 255;
-	    }
-	    else {
-		if (templateData[4 * pixId] === fillColor[0] &
-		    templateData[4 * pixId + 1] === fillColor[1] &
-		    templateData[4 * pixId + 2] === fillColor[2]) {
-		    templateData[4 * pixId] = colorR;
-		    templateData[4 * pixId + 1] = colorG;
-		    templateData[4 * pixId + 2] = colorB;
-		}
-	    }
-	}
-	ctx.putImageData(templateImg, 0, 0);
-    }
     
     async function imageFromIndex(partIndex, itemIndex, colorIndex) {
-	let mode = parts[partIndex].colorMode;
-	if (mode == "fill" || mode == "multiply") {
-	    let templatePath = (assetsPath +
-				parts[partIndex].folder + "/" +
-				parts[partIndex].items[itemIndex] + ".png");
-	    let template = await(loadImage(templatePath));
-	    drawLayer(template, parts[partIndex].colors[colorIndex], mode === "multiply", partIndex);
-	}
-	else {
-	    
-	    let imgPath = (parts[partIndex].colors.length > 0)
-		?
-		(assetsPath +
-		 parts[partIndex].folder + "/" +
-		 parts[partIndex].items[itemIndex] + "_" +
-		 parts[partIndex].colors[colorIndex] + 
-		 ".png")
-		:
-		(assetsPath +
-		 parts[partIndex].folder + "/" +
-		 parts[partIndex].items[itemIndex] +
-		 ".png")
-		;
-	    let img = await(loadImage(imgPath));
-	    clearCanvas(layerCanvases[partIndex]);
-	    ctx = layerCanvases[partIndex].getContext('2d');
-	    ctx.drawImage(img, 0, 0); 
-	}
-    } 
+	let imgPath = (parts[partIndex].colors.length > 0)
+	    ?
+	    (assetsPath +
+	     parts[partIndex].folder + "/" +
+	     parts[partIndex].items[itemIndex] + "_" +
+	     parts[partIndex].colors[colorIndex] + 
+	     ".png")
+	    :
+	    (assetsPath +
+	     parts[partIndex].folder + "/" +
+	     parts[partIndex].items[itemIndex] +
+	     ".png")
+	;
+	let img = await(loadImage(imgPath));
+	clearCanvas(layerCanvases[partIndex]);
+	ctx = layerCanvases[partIndex].getContext('2d');
+	ctx.drawImage(img, 0, 0); 	
+    }
+    
 } ,false);

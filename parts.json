@@ -7,7 +7,7 @@
     },
     { "folder": "ears",
       "items": ["small", "big"],
-      "colorMode": "fromPng",
+      "colorMode": "manual",
       "colors": ["FFFFFF", "FFBD6C", "BBDE49"],
       "noneAllowed": true
     },
