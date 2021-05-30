@@ -14,16 +14,16 @@
     --item-button-color: #fff;
     /* the color/image filepath of the item menu toggle button */
     --item-toggle-color: #fff;
-    --item-toggle-png: url("imagemakerAssets/item_toggle.png");
+    --item-toggle-svg: url("imagemakerAssets/item_toggle.svg");
     /* the color/image filepath of the palette toggle button */
     --palette-toggle-color: #fff;
-    --palette-toggle-png: url("imagemakerAssets/palette_toggle.png");
+    --palette-toggle-svg: url("imagemakerAssets/palette_toggle.svg");
     /* the color/image filepath of the info button */
     --info-toggle-color: #fff;
     --info-toggle-png: "none";
     /* the color/image filepath of the info button */
     --move-toggle-color: #fff;
-    --move-toggle-png: url("imagemakerAssets/move_toggle.png");
+    --move-toggle-svg: url("imagemakerAssets/move_toggle.svg");
     /* the image filepath of the logo */
     --logo-png: "none";
     --save-button-color: #00b33c;
@@ -389,7 +389,7 @@ body {
     height: 100%;
     min-height: 100px;
     background-color: var(--control-panel-color, #ccc);
-    background-image: var(--constrol-panel-png, "none");
+    background-image: var(--control-panel-png, "none");
     background-repeat: no-repeat;
 }
 
@@ -430,7 +430,7 @@ body {
     justify-content: center;
     align-items: center;
     background-color: var(--item-toggle-color, #fff);
-    background-image: var(--item-toggle-png, "none");
+    background-image: var(--item-toggle-svg, "none");
     background-position: center;
     background-repeat: no-repeat;
     border: 0 solid #aaa;
@@ -449,7 +449,7 @@ body {
     width: 50px;
     height: 50px;
     background-color: var(--move-toggle-color, #fff);
-    background-image: var(--move-toggle-png, "none");
+    background-image: var(--move-toggle-svg, "none");
     background-position: center;
     background-repeat: no-repeat;
     color: #333;
@@ -467,7 +467,7 @@ body {
     justify-content: center;
     align-items: center;
     background-color: var(--palette-toggle-color, #fff);
-    background-image: var(--palette-toggle-png, "none");
+    background-image: var(--palette-toggle-svg, "none");
     background-position: center;
     background-repeat: no-repeat;
     color: #333;

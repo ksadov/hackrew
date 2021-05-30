@@ -243,7 +243,7 @@ window.addEventListener('load', function(ev) {
 	    if (parts[i].noneAllowed) {
 		let noneButton = document.createElement('li');
 		let noneButtonIcon = document.createElement('img');
-		noneButtonIcon.src = assetsPath + "none_button.png";
+		noneButtonIcon.src = assetsPath + "none_button.svg";
 		noneButton.appendChild(noneButtonIcon);
 		document.getElementById("itemlist_list").appendChild(noneButton);
 		noneButton.style.display = "none";
