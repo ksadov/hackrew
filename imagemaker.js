@@ -1,33 +1,5 @@
 window.addEventListener('load', function(ev) {
-    
-    const parts = [
-	{ folder: "body",
-	  items: ["sleek", "fluffy"],
-	  colorMode: "multiply",
-	  colors: ["#FFBD6C", "#FFFFFF"],
-	  noneAllowed: false
-	},
-	{ folder: "ears",
-	  items: ["small", "big"],
-	  colorMode: "fromPng",
-	  colors: ["#FFFFFF", "#FFBD6C", "#BBDE49"],
-	  noneAllowed: true
-	},
-	{ folder: "tail",
-	  items: ["long", "short"],
-	  colorMode: "fill",
-	  colors: ["#FFFFFF", "#FFBD6C"],
-	  noneAllowed: false,
-	  moveable: false
-	},
-	{ folder: "accessories",
-	  items: ["bow", "crown"],
-	  colorMode: null,
-	  colors: [],
-	  noneAllowed: true
-	}
-	];
-    
+    let parts = [];
     // code below this line controls functionality
     // dw about if you're just editing visual assets
 
@@ -78,7 +50,8 @@ window.addEventListener('load', function(ev) {
     
     init();
 
-    async function init() {	
+    async function init() {
+	await initParts();
 	initButtons();
 	initCanvases()
 	await initArrays();
@@ -88,6 +61,12 @@ window.addEventListener('load', function(ev) {
 	await updateSelectedPart(0);
     }
 
+    async function initParts (data) {
+	const response = await fetch("./parts.json");
+	const json = await response.json();
+	parts = json.parts;
+    }
+    
     /**
      * Assign canvases to list of layer canvases
      */
