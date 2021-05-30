@@ -253,7 +253,7 @@ window.addEventListener('load', function(ev) {
 		itemsElements[i][0] = noneButton;
  	    }
 	    let mode = parts[i].colorMode;
-	    let pngSuffix = (mode == "fromPng") ? "_0" : "";
+	    let pngSuffix = (mode == "fromPng") ? "_" + parts[i].colors[0] : "";
 	    for (let j = 0; j < parts[i].items.length; j++) {
 		let item = document.createElement('li');
 		let itemIcon = document.createElement('img');
@@ -407,9 +407,9 @@ window.addEventListener('load', function(ev) {
 	ctx.drawImage(template, 0, 0);
 	let templateImg = ctx.getImageData(0, 0, WIDTH, HEIGHT);
 	let templateData = templateImg.data;
-	let colorR = parseInt("0x" + color.substring(1, 3));
-	let colorG = parseInt("0x" + color.substring(3, 5));
-	let colorB = parseInt("0x" + color.substring(5, 7));		
+	let colorR = parseInt("0x" + color.substring(0, 2));
+	let colorG = parseInt("0x" + color.substring(2, 4));
+	let colorB = parseInt("0x" + color.substring(4, 6));		
 	for (let pixId = 0; pixId < template.width * template.height; pixId++) {	    
 	    if (multiply) {
 		templateData[4 * pixId] = (templateData[4 * pixId]/255) * (colorR/255) * 255;
@@ -445,7 +445,7 @@ window.addEventListener('load', function(ev) {
 		(assetsPath +
 		 parts[partIndex].folder + "/" +
 		 parts[partIndex].items[itemIndex] + "_" +
-		 colorIndex + 
+		 parts[partIndex].colors[colorIndex] + 
 		 ".png")
 		:
 		(assetsPath +

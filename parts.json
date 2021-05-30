@@ -2,19 +2,19 @@
     { "folder": "body",
       "items": ["sleek", "fluffy"],
       "colorMode": "multiply",
-      "colors": ["#FFBD6C", "#FFFFFF"],
+      "colors": ["FFBD6C", "FFFFFF"],
       "noneAllowed": false
     },
     { "folder": "ears",
       "items": ["small", "big"],
       "colorMode": "fromPng",
-      "colors": ["#FFFFFF", "#FFBD6C", "#BBDE49"],
+      "colors": ["FFFFFF", "FFBD6C", "BBDE49"],
       "noneAllowed": true
     },
     { "folder": "tail",
       "items": ["long", "short"],
       "colorMode": "fill",
-      "colors": ["#FFFFFF", "#FFBD6C"],
+      "colors": ["FFFFFF", "FFBD6C"],
       "noneAllowed": false,
       "moveable": false
     },
