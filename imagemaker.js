@@ -156,12 +156,18 @@ window.addEventListener('load', function(ev) {
      */ 
     async function randomize() {
 	for (let i = 0; i < parts.length; i++) {
-	    let itemRange = parts[i].items.length;
+	    let noneCount = Number(parts[i].noneAllowed);
+	    let itemRange = parts[i].items.length + noneCount;
 	    let itemIndex = Math.floor(Math.random() * itemRange);
 	    let colorRange = parts[i].colors.length;
 	    let colorIndex = Math.floor(Math.random() * colorRange);
 	    selectedColors[i] = colorIndex;
-	    selectedItemIndex[i] = itemIndex;
+	    if (noneCount === 1 && itemIndex === 0) {
+		selectedItemIndex[i] = null;
+	    }
+	    else {
+		selectedItemIndex[i] = itemIndex - noneCount;
+	    }
 	    for (j = 0; j < itemRange; j++) {
 		if (j == itemIndex) {
 		    itemsElements[i][j].classList.add("selected");
