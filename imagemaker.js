@@ -39,10 +39,11 @@ window.addEventListener('load', function(ev) {
     let selectedPart = 0;
     /* 1d array of colors where selectedColors[i] is the color selected for part i */
     let selectedColors = []  
-    /* 1d array of indices of items currently selected, sans _{colorIndex} suffix, 
-       where selectedItemNames[i] is the selected item of part i*/
+    /* 1d array of indices of items currently selected,
+       where selectedItemIndex[i] is the index of the selected item for of part i*/
     let selectedItemIndex = []
-
+    /* 1d array of canvases of items currently selected, 
+       where layerCanvases[i] depicts the selected item of part i in the selected color*/
     const layerCanvases = [];
     
     init();
@@ -58,6 +59,9 @@ window.addEventListener('load', function(ev) {
 	await updateSelectedPart(0);
     }
 
+    /**
+     * Fetch parts info from parts.json and initialize the parts variable.
+     */
     async function initParts (data) {
 	const response = await fetch("./parts.json");
 	const json = await response.json();
@@ -395,7 +399,11 @@ window.addEventListener('load', function(ev) {
 	}
 	return null;
     }
-    
+
+    /**
+     * Render parts[partIndex].items[itemIndex] in color 
+     * parts[partIndex].colors[colorIndex] to layerCanvases[partIndex]
+     */
     async function imageFromIndex(partIndex, itemIndex, colorIndex) {
 	let imgPath = (parts[partIndex].colors.length > 0)
 	    ?
