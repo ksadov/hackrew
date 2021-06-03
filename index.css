@@ -136,6 +136,7 @@ body {
     .imagemaker_info_content {
 	font-size: 3vh;
     }
+
 }
 
 @media (orientation: portrait) {
@@ -234,6 +235,7 @@ body {
 	line-height: 6vh;
 	left: -10vh;
 	bottom: 4px;
+	background-size: 5vh;
     }
 
     .imagemaker_ctrl_buttons .button_show_itemlist {
