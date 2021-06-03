@@ -4,7 +4,7 @@ from PIL import Image
 with open('parts.json') as parts_json:
     parts = json.load(parts_json)['parts']
 
-fillColor = (123, 123, 123)
+fillColor = (200, 200, 200)
 
 def color_template():
     for part in parts:
