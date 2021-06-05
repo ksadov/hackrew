@@ -1,4 +1,6 @@
 :root {
+    /* the color of the background of the loading sign*/
+    --loading-bg-color: #FFFFFF;
     /* the color of the border around selected part and icon buttons */
     --select-color: #FF0000;
     /* the color/image filepath of the background of the image display area */
@@ -133,9 +135,16 @@ body {
 	height: 48px;
     }
 
+    .imagemaker_info_content {
+	font-size: 3vh;
+    }
 }
 
 @media (orientation: portrait) {
+    .loading {
+    font-size: 3vh;
+    }
+    
     .imagemaker_container_wrapper {
 	width: 95vw;
 	min-height: 95vh;
@@ -231,7 +240,6 @@ body {
 	line-height: 6vh;
 	left: -10vh;
 	bottom: 4px;
-	background-size: 5vh;
     }
 
     .imagemaker_ctrl_buttons .button_show_itemlist {
@@ -239,7 +247,6 @@ body {
 	height: 6vh;
 	bottom: 4px;
 	right: 4px;
-	background-size: 5vh;
     }
 
     .imagemaker_colorpalette ul li {
@@ -294,6 +301,14 @@ body {
     background-image: var(--download-button-png, "none");
     background-position: center;
     background-repeat: no-repeat;
+}
+
+.loading {
+    position: absolute;
+    font-size: 3vh;
+    background-color: var(--loading-bg-color, #FFFFFF);
+    //padding: 3px;
+    //bottom: 4px;
 }
 
 .imagemaker_canvas_wrapper canvas {
@@ -530,7 +545,6 @@ body {
 
 .imagemaker_info_content {
     margin: 10px;
-    font-size: 14pt;
 }
 
 .imagemaker_colorpalette {

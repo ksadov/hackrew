@@ -18,6 +18,7 @@ window.addEventListener('load', function(ev) {
     const paletteButton = document.getElementById("palette_button");
     const itemsButton = document.getElementById("items_button");
     const saveButton = document.getElementById("save_button");
+    const loading = document.getElementById("loading");
     /* 1d array of part select button DOM elements */
     const partsElements = [];
     /* 2d array of item select button DOM elements */
@@ -204,6 +205,7 @@ window.addEventListener('load', function(ev) {
      */
     async function renderLayerStack() {
 	clearCanvas(workingCanvas);
+	let timer = setTimeout(function(){ loading.style.display = "block"; }, 500);
 	for (let partId = 0; partId < parts.length; partId++) {
 	    clearCanvas(layerCanvases[partId]);
 	    if (selectedItemIndex[partId] !== null) {
@@ -212,6 +214,8 @@ window.addEventListener('load', function(ev) {
 	    workingContext.drawImage(layerCanvases[partId], 0, 0);
 	}
 	clearCanvas(canvas);
+	clearTimeout(timer);
+	loading.style.display = "none";
 	context.drawImage(workingCanvas, 0, 0);
 	await updateSave();
 	return null;

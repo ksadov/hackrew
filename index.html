@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <html lang=en>
   <head>
     <meta charset="UTF-8"/>
@@ -12,8 +11,13 @@
 	<div id="info_wrap" class="imagemaker_info_wrapper">
 	  <div class="imagemaker_info_content">
 	    <p>
-	      This applet was made with
-	      <a href="https://github.com/ksadov/hackrew">hackrew</a>.
+	      I made this applet using my open-source character creator
+	      framework, <a href="https://github.com/ksadov/hackrew">hackrew</a>.
+	    </p>
+	    <p>
+	      If you're interested in making your own, I suggest
+	      checking out the linked Github repository for documentation.
+	    </p>
 	  </div>
 	</div>
 	<div class="imagemaker_container">
@@ -21,6 +25,9 @@
 	    <canvas id="my-canvas-object" width="600" height="600"></canvas>
 	    <a class="imagemaker_save_button" id="save" download="new_image.png">
 	      Save
+	    </a>
+	    <a class="loading" id="loading">
+	      Loading...
 	    </a>
 	    <div class="imagemaker_ctrl_buttons">
 	      <span id="move_button" class="button_show_controller"></span>
