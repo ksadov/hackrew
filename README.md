@@ -1,6 +1,6 @@
 ## Info
 
-hackrew is a framework for making character creator/dressup game applets a la [picrew](https://picrew.me/). You can check out an online demo [here](https://ksadov.github.io/hackrew/). To make your own character creator, fork this repo or download the files and follow the instructions below.
+hackrew is a framework for making character creator/dressup game applets a la [picrew](https://picrew.me/). You can check out an online demo [here](https://ksadov.github.io/hackrew/), or see a more complex version on [Neocities](https://cherrvak.neocities.org/furrycreator/index.html). To make your own character creator, fork this repo or download the files and follow the instructions below.
 
 ## Instructions
 
@@ -40,7 +40,7 @@ To manually create color variants for each item of a part `part`, set `"colorMod
 
 To generate color variants automatically, you'll need to run the Python script `generate_colored_images.py`. The script uses files of the form `"imagemakerAssets/part/item.png`" as templates to generate colored versions of each item. If a part has `"colorMode"` `"fill"`, the script fills the template's pixels of RGB value `(123, 123, 123)` with the desired color, preserving alpha. If a part has `"colorMode"` `"multiply"`, the script treats the template as an alpha-preserving multiply layer over the desired color.
 
-To run the Python script, you'll need [pipenv] installed(https://pypi.org/project/pipenv/) and on your $PATH. Then from within the hackrew directory:
+To run the Python script, you'll need [pipenv](https://pypi.org/project/pipenv/) installed and on your $PATH. Then from within the hackrew directory:
 ```
 pipenv install
 pipenv run python3 generate_colored_images.py
@@ -51,7 +51,11 @@ The script will take a while to run, but at the end you'll have your color varia
 ### Step 4: edit the UI
 To change the colors and graphics of the UI, edit the variables at the top of index.css.
 
+### Step 5: host your applet
+
+The only files that you need to host your applet are index.html, index.css imagemaker.js, and the imagemakerAssets folder. To host on Github pages, fork this repo, customize the files, and follow the intrucutions [here](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
+
+To host on Neocities, make a new folder to contain your project (in my [example page](https://cherrvak.neocities.org/furrycreator/index.html), the folder is called "furrycreator"). Place the files index.html, index.css and imagemaker.js in this folder. Then place the folder imagemakerAssets in the same directory, but be careful to preserve the subfolder structure: the Neocities drag-and-drop GUI won't preserve the seperate folders for each part, which will break the code, so you're better off making a folder called imagemakerAssets and dragging-and-dropping in each part folder one-by-one. Then your completed applet will be on the page `https://your-neocities-page.neocities.org/your-folder-name/` (ex: https://cherrvak.neocities.org/furrycreator/)
+
 ## TODO
-- Expand and revise Instructions
-- Try hosting on Neocities, maybe add a section with instructions for that
 - Add item shift button or draggable items?
